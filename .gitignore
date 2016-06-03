@@ -144,3 +144,5 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+nohup.out

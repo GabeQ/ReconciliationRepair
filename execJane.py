@@ -38,7 +38,7 @@ def main():
 
 		if not os.path.isfile(inFile):
 			continue
-		os.system("./Jane/jane-cli.sh -p {0} -i {1} -c 0 {2} {3} {4} 0 treeFiles/COG".format(initPopulationSize, numOfGenerations, dVal, tVal, lVal) 
+		os.system("./Jane/jane-cli.sh -C -p {0} -i {1} -c 0 {2} {3} {4} 0 treeFiles/COG".format(initPopulationSize, numOfGenerations, dVal, tVal, lVal) 
 			+ index + ".tree > janeOut/COG" + index + ".txt")
 
 if __name__ == "__main__": 
