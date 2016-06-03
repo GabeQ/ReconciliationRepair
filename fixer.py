@@ -241,14 +241,14 @@ def main():
     for i in xrange(fileNum):
 
         index = str(i + 1)
-        for j in xrange(4 - len(str(i + 1))):
-            index = "0" + index
+    #    for j in xrange(4 - len(str(i + 1))):   #for-loop only need if numbered files have 0's in front of their #s.
+    #        index = "0" + index
 
-        fileName = "real-100taxa/COG" + index + ".newick"
+        fileName = "real-100taxa/G" + index + ".newick"
         if not os.path.isfile(fileName):
             continue
 
-        outFile = open("fixerOut/COG" + index + ".txt", 'w')
+        outFile = open("fixerOut/G" + index + ".txt", 'w') #change the letters after "fixesOut/" to the letters preceding the numbering of the files
 
         print fileName[13:]
         outFile.write(fileName[13:] + "\n")
