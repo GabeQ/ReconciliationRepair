@@ -246,6 +246,16 @@ def fixer(fileName, dup, trans, loss):
 
     min_cost = None
 
+        index = str(i + 1)
+    #    for j in xrange(4 - len(str(i + 1))):   #for-loop only need if numbered files have 0's in front of their #s.
+    #        index = "0" + index
+
+        fileName = "real-100taxa/G" + index + ".newick"
+        if not os.path.isfile(fileName):
+            continue
+
+        outFile = open("fixerOut/G" + index + ".txt", 'w') #change the letters after "fixesOut/" to the letters preceding the numbering of the files
+
     for T in recs:
         alpha = recon_tree_to_dtl(T)
         out(S, G, alpha)

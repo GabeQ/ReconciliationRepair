@@ -5,7 +5,9 @@ fixerOut/
 janeOut/
 janeCosts/
 plots/
-
+highDTL/
+lowDTL/
+mediumDTL/
 
 #OS junk files
 [Tt]humbs.db
