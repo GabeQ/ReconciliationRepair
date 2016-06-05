@@ -29,10 +29,9 @@ import os
 
 
 # Global variables (can be customized in the future)
-dVal = 2
-tVal = 3
-lVal = 1
-fileNum = 100
+dVal = 0
+tVal = 0
+lVal = 0
 
 def recon_tree_to_dtl(T):
     sigma, delta, theta, xi = [], [], [], []
@@ -178,7 +177,7 @@ def temporal_consistency_fixer(G, G_dict, S, S_dict, alpha):
     return alpha, i
 
 
-def out(S, G, alpha, outFile):
+def out(S, G, alpha):
     T = dtl_to_recon_tree(S, G, alpha)
     d, s, t, l = 0, 0, 0, 0
     for key in T.keys():
@@ -192,11 +191,6 @@ def out(S, G, alpha, outFile):
             l += 1
 
     print "D:", d, "S:", s, "T:", t, "L:", l, "total:", d * dVal + t * tVal + l * lVal
-    outFile.write("D: {0} S: {1} T: {2} L: {3} total: {4}\n".format(str(d),
-                                                                    str(s),
-                                                                    str(t),
-                                                                    str(l),
-                                                                    str(d * dVal + t * tVal + l * lVal)))
 
     return d * dVal + t * tVal + l * lVal
 
@@ -233,53 +227,32 @@ def eteTreeReader(fileName):
     return hostTree, parasiteTree
 
 
-def main():
+def fixer(fileName, dup, trans, loss):
+    global dval, tval, lval
+    dval = dup
+    tval = trans
+    lval = loss
 
-    if not os.path.exists("fixerOut"):
-        os.mkdir("fixerOut")
+    print fileName
 
-    for i in xrange(fileNum):
+    S_dict, G_dict, _ = newickFormatReader.getInput(fileName)
+    S, G = eteTreeReader(fileName)
+    recs, allRecs = MasterReconciliation.Reconcile(["", fileName, str(dVal), str(tVal), str(lVal), "unit", "0", "1", "0", "1"])
 
-        index = str(i + 1)
-        for j in xrange(4 - len(str(i + 1))):
-            index = "0" + index
+    totRecs = len(allRecs)
 
-        fileName = "real-100taxa/COG" + index + ".newick"
-        if not os.path.isfile(fileName):
-            continue
+    print "# of Reconciliations: {0}".format(totRecs)
+    print "# of Infeasible Reconciliations: {0}".format(len(recs))
 
-        outFile = open("fixerOut/COG" + index + ".txt", 'w')
+    min_cost = None
 
-        print fileName[13:]
-        outFile.write(fileName[13:] + "\n")
+    for T in recs:
+        alpha = recon_tree_to_dtl(T)
+        out(S, G, alpha)
+        alpha, pull_up = temporal_consistency_fixer(G, G_dict, S, S_dict, alpha)
+        cost = out(S, G, alpha)
+        if min_cost is None or cost < min_cost:
+            min_cost = cost
+        print "number of operations: {0}".format(pull_up)
 
-        S_dict, G_dict, _ = newickFormatReader.getInput(fileName)
-        S, G = eteTreeReader(fileName)
-        recs, allRecs = MasterReconciliation.Reconcile(["", fileName, str(dVal), str(tVal), str(lVal), "unit", "0", "1", "0", "1"])
-
-        totRecs = len(allRecs)
-
-        print "# of Infeasible Reconciliations: {0}".format(len(recs))
-        outFile.write("# of Reconciliations: {0}\n".format(totRecs))
-        outFile.write("# of Infeasible Reconciliations: {0}\n".format(len(recs)))
-
-        min_cost = None
-
-        for T in recs:
-            alpha = recon_tree_to_dtl(T)
-            out(S, G, alpha, outFile)
-            alpha, pull_up = temporal_consistency_fixer(G, G_dict, S, S_dict, alpha)
-            cost = out(S, G, alpha, outFile)
-            if min_cost is None or cost < min_cost:
-                min_cost = cost
-            print "number of operations: {0}".format(pull_up)
-            outFile.write("number of operations: {0}\n".format(pull_up))
-
-        print "min total:", min_cost
-        outFile.write("min total: " + str(min_cost) + "\n")
-
-        outFile.close()
-
-
-if __name__ == "__main__" :
-   main()
+    return min_cost
