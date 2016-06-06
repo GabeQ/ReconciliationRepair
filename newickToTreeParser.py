@@ -94,4 +94,4 @@ def newickToTreeParser(newickFile):
         outFile.write(str(H_dict[phi[key]]) + "\t" + str(P_dict[key]) + "\n")
 
     outFile.close()
-    return outFile
+    return "out.tree"
