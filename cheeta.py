@@ -1,9 +1,3 @@
-import calcJaneCost
-import DP
-import execJane
-import fixer
-import Greedy
-import makePlot
 #cheeta.py
 
 #Created by Matt Dohlen, Chen Pekker, Gabriel Quiroz
@@ -18,6 +12,13 @@ import makePlot
 #a better solution, or whether there may be a better solution with larger input
 #values for Jane.
 
+
+import calcJaneCost
+import DP
+import execJane
+import fixer
+import Greedy
+import makePlot
 import MasterReconciliation
 import newickFormatReader as nfr
 import newickToTreeParser as ntp
