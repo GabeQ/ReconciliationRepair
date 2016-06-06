@@ -3,6 +3,9 @@
 # Modified by Weiyun Ma
 # May 2016
 #
+#Modified by Matt Dohlen, Gabriel Quiroz
+#June 2016
+#
 # This files converts all .newick files in the real-100taxa folder into
 # corresponding .tree files (that are later used as Jane's inputs) 
 # in the treeFiles folder.
@@ -40,6 +43,7 @@ import newickFormatReader
 from ReconciliationGraph import treeFormat
 
 
+#Changed to take in a newick file rather than be a main function
 def newickToTreeParser(newickFile):	
 
     
