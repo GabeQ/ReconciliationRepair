@@ -65,16 +65,16 @@ def parseNewick(newickString, treeType):
     """ Queries the user for a newick file name and returns the contents
         of that file in the dictionary representation used by the xscape
         tools. """
-    tree = Phylo.read(StringIO(newickString), "newick")
-    distanceDict = tree.depths(unit_branch_lengths=True)
+    tree = Phylo.read(StringIO(newickString), "newick") #reads in a single tree
+    distanceDict = tree.depths(unit_branch_lengths=True) #dictionary keys contain the name of the node and the branch length, value for each key is the depth of the node 
     D = {}
-    for clade in distanceDict:
+    for clade in distanceDict: #Dictionary created here only records the name of the node and it's associated depth, the branchlength is not important.
         name = clade.name
         dist = distanceDict[clade]
-        D[name] = dist
-    dfsList = [(node.name, int(D[node.name])) for node in tree.find_clades()]
+        D[name] = dist #dist is the depth of the node
+    dfsList = [(node.name, int(D[node.name])) for node in tree.find_clades()] #creates a list with tuples of the name of the node and the depth of that node
     treeDict = {}
-    buildTreeDictionary(buildTree(dfsList), "Top", treeDict, treeType)
+    buildTreeDictionary(buildTree(dfsList), "Top", treeDict, treeType) 
     return treeDict
 
 def buildTree(dfsList):
