@@ -78,10 +78,11 @@ def parseNewick(newickString, treeType):
     return treeDict
 
 def buildTree(dfsList):
-    """ Takes as input a list of tuples of the form (nodeName, distanceFromRoot)
+    """ Takes as input a list of tuples of the form (nodeName, distanceFromRoot (aka depth))
         and returns a tuple representation of the tree of the form
         (Root, Left, Right) where Left and Right are themselves of this form
-        or None. This is an intermediate tree representation that can then
+        or 'None'. The Root is just the name of the node.
+        This is an intermediate tree representation that can then
         be used to build the dictionary representation of trees used in
         the xscape tools."""
     if len(dfsList) == 1:
@@ -101,7 +102,7 @@ def buildTree(dfsList):
         return (rootName, leftTree, rightTree)
 
 def buildTreeDictionary(tupleTree, parentVertex, D, treeType):
-    """ Takes as input a tuple representation of a tree (constructed by
+    """ Takes as input a tuple (Root, Left, Right) representation of a tree (constructed by
         the buildTree function, for example) and returns the dictionary
         representation of the tree used by the xscape tools. """
     root = tupleTree[0]
