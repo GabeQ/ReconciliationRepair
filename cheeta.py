@@ -51,24 +51,27 @@ def main():
         newickFile = fileName
         treeFile = ntp.newickToTreeParser(fileName)
     else:
-        print 'The file must be of .tree or .newick format'
+        print "The file must be in either '.tree' or '.newick' format"
         return
     
     #run fixer.py with .newick file
     fixerCost = fixer.fixer(newickFile, dVal, tVal, lVal)
-    print "Fixer Cost: " + fixerCost
     
     #run Jane with .tree file
     janeOut = runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
     janeCost = cjc.janeCost(janeOut, dVal, tVal, lVal)
-    print "Jane Cost: " + janeCost
     
-    #compare fixer score with Jane score
+    #compare fixer score with Jane score, print results to user
     if fixerCost == janeCost or janeCost < fixerCost:
         print "Jane's solution is optimal"
+        print "Optimal Cost: " + janeCost
         return
     elif fixerCost < janeCost:
         print "Jane's solution may or may not be optimal, try running Jane with a larger population size and more generations"
+        print "Lower Bound Cost: " #returns the DP output
+        print "Jane Cost: " + janeCost
+        print "Fixer Cost: " + fixerCost
+        
         return
     
 if __name__ == '__main__':
