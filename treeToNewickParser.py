@@ -4,9 +4,8 @@
 #June 2016
 
 from cStringIO import StringIO
-import os.path
-import os
 import networkx as nx
+import tempfile
 
 def readTree(content, lineNum):
     entryDict = {}
@@ -46,7 +45,7 @@ def readNames(content, lineNum):
 def readPhi(content, lineNum):
     phi = []
     while True:
-        if content[lineNum].isspace():
+        if lineNum >= len(content) or content[lineNum].isspace():
             break
         entry = content[lineNum].split()
         if len(entry) != 2:
@@ -60,7 +59,8 @@ def readPhi(content, lineNum):
 def namePhi(phiList, hostNames, parasNames):
     phiStr = ""
     for phi in phiList:
-        phiStr = phiStr + hostNames[phi[0]] + ":" + parasNames[phi[1]] + "\n"
+        # Tree maps host to parasite, newick maps parasite to host
+        phiStr = phiStr + parasNames[phi[1]] + ":" + hostNames[phi[0]] + "\n"
     return phiStr
         
 def toNewick(graph, root):
@@ -114,8 +114,11 @@ def treeToNewickParser(treeFile):
     
     # PHI
     phiList = readPhi(content, index)
-    phiStr = namePhi(phiList, hostDict, parasDict)
+    phiStr = namePhi(phiList, hostNames, parasNames)
     
     fileStr = hostTreeStr + ";\n" + parasTreeStr + ";\n" + phiStr
-    print fileStr
-    return
+    
+    temp = tempfile.NamedTemporaryFile(delete=False)
+    temp.write(fileStr)
+    temp.close()
+    return temp.name

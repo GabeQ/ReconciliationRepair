@@ -1,5 +1,5 @@
-#takes tree from various files and puts them into a new directory
-# modified by Chen Pekker
+#takes .tree files from various folders/directories and puts them into a an output folders
+# Chen Pekker, June 2016
 
 import shutil
 import os

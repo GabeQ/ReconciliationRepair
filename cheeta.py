@@ -14,21 +14,15 @@
 #is a better solution, or whether there may be a better solution with larger
 #input values for Jane.
 
-
-import calcJaneCost as cjc
 import DP
-import execJane
 import fixer
-import Greedy
-import makePlot
+import JaneUtil
 import MasterReconciliation
-import newickFormatReader as nfr
 import newickToTreeParser as ntp
-import orderGraph
-import ReconciliationGraph as rg
+import treeToNewickParser as ptn
 import sys
 import os
-                        
+                       
 def main():
     #arguments to be provided in the command line
     fileName = sys.argv[1]
@@ -39,14 +33,17 @@ def main():
     numGen = int(sys.argv[6])
     newickFile = None
     treeFile = None
+    tempFileToRemove = None
     
-    #file converter (still waiting on treeToNewickParser)
+    #file converter
     if '.tree' in fileName:
         treeFile = fileName
-        newickFile = None
-    elif '.newick' in fileName:
+        newickFile = ptn.treeToNewickParser(fileName)
+        tempFileToRemove = newickFile
+    elif '.newick' in fileName or '.nwk' in fileName:
         newickFile = fileName
         treeFile = ntp.newickToTreeParser(fileName)
+        tempFileToRemove = treeFile
     else:
         print "The file must be in either '.tree' or '.newick' format"
         return
@@ -55,38 +52,39 @@ def main():
     DTL, numRecon, DPCost = DP.reconcile(newickFile, dVal, tVal, lVal)
 
     #test if the DP is temporally consistent
-    recs, allRecs = MasterReconciliation.Reconcile(["", fileName, str(dVal), str(tVal), str(lVal), "unit", 0, 1, 0, 1])
+    recs, allRecs = MasterReconciliation.Reconcile(["", newickFile, dVal, tVal, lVal, "unit", 0, 1, 0, 1])
     if len(recs) == 0: #no infeasible reconciliations found --> no need for fixer algorithm
         fixerCost = float('inf')
     else:
-        fixerCost = fixer.fixer(newickFile, dVal, tVal, lVal) #run fixer.py with .newick file       
-
-    #run fixer.py with .newick file
-    fixerCost = fixer.fixer(newickFile, dVal, tVal, lVal)
+        fixerCost = fixer.fix(newickFile, dVal, tVal, lVal) #run fixer.py with .newick file       
 
     #run Jane with .tree file
-    janeOut = execJane.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
-    janeCost = cjc.janeCost(janeOut, dVal, tVal, lVal)
-
+    janeOut = JaneUtil.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
+    janeCost = JaneUtil.janeCost(janeOut, dVal, tVal, lVal)
+    
     #compare fixer score with Jane score
     if DPCost == janeCost: #Jane's solution is optimal
         print "Jane Solution Cost: " + str(janeCost)
         print "Theoretical Lower Bound: " + str(DPCost)
         print "Jane's Solution is Optimal"
         return
-          
+
     elif fixerCost < janeCost: #fixer found a better solution than Jane
         print "Jane Solution Cost: " + str(janeCost)
         print "Theoretical Lower Bound: " + str(DPCost)
-        print "Cheeta found a valid solution of " + str(fixerCost)
+        print "Cheeta found a valid solution of cost: " + str(fixerCost)
         print "You may wish to try running Jane again with larger values for the population and/or generation parameters"
         return
-        
+
     else: #fixer was unable to find a better solution than Jane
         print "Jane Solution Cost: " + str(janeCost)
         print "Theoretical Lower Bound: " + str(DPCost)
         print "Cheeta was unable to find a valid solution better than Jane"
         print "You may wish to try running Jane again with larger values for the population and/or generation parameters"
         
+    os.remove(tempFileToRemove)
+    os.remove(janeOut)
+    return
+    
 if __name__ == '__main__':
     main()

@@ -227,7 +227,7 @@ def eteTreeReader(fileName):
     return hostTree, parasiteTree
 
 
-def fixer(fileName, dup, trans, loss):
+def fix(fileName, dup, trans, loss):
     global dVal, tVal, lVal
     dVal = dup
     tVal = trans

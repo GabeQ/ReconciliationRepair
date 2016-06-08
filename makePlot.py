@@ -14,6 +14,7 @@ import os
 import os.path
 from cStringIO import StringIO
 import matplotlib.pyplot as plt
+from collections import OrderedDict
 import numpy as np
 import MasterReconciliation
 
@@ -24,7 +25,7 @@ lVal = 1
 fileNum = 100
 
 def main():
-
+    
 	janeX = []
 	fixerX = []
 	janeList = []
@@ -89,16 +90,26 @@ def main():
 		fixerFile.close()
 
 		print "Done ", index
-
-	plt.plot(janeX, janeList, 'ro', label='Jane')
-	plt.plot(fixerX, fixerList, 'b*', label='Fixer Alg')
-	plt.plot(optimalX, optimalList, 'y*', label='Optimal (No Fixing Needed)')
-	plt.xlabel('File Index')
-	plt.ylabel('Cost')
+        fig, ax = plt.subplots()
+	ax.plot(janeX, janeList, 'ro', label='Jane')
+	ax.plot(fixerX, fixerList, 'b*', label='Fixer')
+	ax.plot(optimalX, optimalList, 'y^', label='Optimal')
+	plt.xlabel('COG File', fontsize=21)
+	plt.ylabel('Cost', fontsize=21)
 	plt.legend()
 	plt.grid()
-	plt.xticks(np.arange(0, fileNum, 1))
-	plt.show()
+	plt.xticks(np.arange(0, fileNum, 10))
+	
+	
+	legend = ax.legend(loc='upper right', numpoints = 1)
+	
+	# Set the fontsize
+        for label in legend.get_texts():
+            label.set_fontsize('xx-large')
+            
+        
+            
+        plt.show()
 
 
 if __name__ == "__main__":
