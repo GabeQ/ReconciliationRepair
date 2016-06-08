@@ -303,6 +303,7 @@ def DP(hostTree, parasiteTree, phi, D, T, L):
 
     # Use findPath and findBestRoots to construct the DTL graph dictionary
     treeMin = findBestRoots(parasiteTree, Minimums)
+    DPCost =  Minimums[treeMin[0]]
     DTL = findPath(treeMin, eventsDict, {})
     for key in Score.keys():
         if not key in DTL:
@@ -310,7 +311,7 @@ def DP(hostTree, parasiteTree, phi, D, T, L):
 
     DTL, numRecon = addScores(treeMin, DTL, Score)
 
-    return DTL, numRecon
+    return DTL, numRecon, DPCost
 
 
 def preorderDTLsort(DTL, ParasiteRoot):

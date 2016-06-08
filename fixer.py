@@ -190,7 +190,7 @@ def out(S, G, alpha):
         elif T[key][0] == 'L':
             l += 1
 
-    print "D:", d, "S:", s, "T:", t, "L:", l, "total:", d * dVal + t * tVal + l * lVal
+    #print "D:", d, "S:", s, "T:", t, "L:", l, "total:", d * dVal + t * tVal + l * lVal
 
     return d * dVal + t * tVal + l * lVal
 
@@ -233,16 +233,15 @@ def fixer(fileName, dup, trans, loss):
     tVal = trans
     lVal = loss
 
-    print fileName
+    #print fileName
 
     S_dict, G_dict, _ = newickFormatReader.getInput(fileName)
     S, G = eteTreeReader(fileName)
-    recs, allRecs = MasterReconciliation.Reconcile(["", fileName, dVal, tVal, lVal, "unit", 0, 1, 0, 1])
-    print 'lol'
+    recs, allRecs = MasterReconciliation.Reconcile(["", fileName, str(dVal), str(tVal), str(lVal), "unit", 0, 1, 0, 1])
     totRecs = len(allRecs)
 
-    print "# of Reconciliations: {0}".format(totRecs)
-    print "# of Infeasible Reconciliations: {0}".format(len(recs))
+    #print "# of Reconciliations: {0}".format(totRecs)
+    #print "# of Infeasible Reconciliations: {0}".format(len(recs))
 
     min_cost = None
 
@@ -253,6 +252,6 @@ def fixer(fileName, dup, trans, loss):
         cost = out(S, G, alpha)
         if min_cost is None or cost < min_cost:
             min_cost = cost
-        print "number of operations: {0}".format(pull_up)
+        #print "number of operations: {0}".format(pull_up)
 
     return min_cost
