@@ -4,10 +4,10 @@ treeFiles/
 fixerOut/
 janeOut/
 janeCosts/
-plots/
 highDTL/
 lowDTL/
 mediumDTL/
+janeOut.txt/
 
 #OS junk files
 [Tt]humbs.db

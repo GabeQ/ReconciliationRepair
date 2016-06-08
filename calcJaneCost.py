@@ -29,14 +29,10 @@ def janeCost(janeOutFile, dVal, tVal, lVal):
         if line.startswith("Duplication: "):
             num = int(line[13:])
             ans += num * dVal
-            print num
         elif line.startswith("Host Switch: "):
             num = int(line[12:])
             ans += num * tVal
-            print num
         elif line.startswith("Loss: "):
             num = int(line[6:])
             ans += num * lVal
-            print num
-
     return ans

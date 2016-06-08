@@ -37,7 +37,7 @@ def Reconcile(argList):
 	host, paras, phi = newickFormatReader.getInput(fileName)
 	hostRoot = ReconciliationGraph.findRoot(host)
 	# Default scoring function (if freqtype== Frequency scoring)
-	DTLReconGraph, numRecon = DP.DP(host, paras, phi, D, T, L)
+	DTLReconGraph, numRecon, cost = DP.DP(host, paras, phi, D, T, L)
 	#uses xScape scoring function
 	# if freqType == "xscape":
 	# 	DTLReconGraph = calcCostscapeScore.newScoreWrapper(fileName, switchLo, \
@@ -62,7 +62,7 @@ def unitScoreDTL(hostTree, parasiteTree, phi, D, T, L):
 	duplication cost (D), transfer cost (T), and loss cost (L) and returns the
 	DTL graph in the form of a dictionary, with event scores set to 1. 
 	Cospeciation is assumed to cost 0. """
-	DTLReconGraph, numRecon = DP.DP(hostTree, parasiteTree, phi, D, T, L)
+	DTLReconGraph, numRecon, cost = DP.DP(hostTree, parasiteTree, phi, D, T, L)
 	newDTL = {}
 	for vertex in DTLReconGraph:
 		newDTL[vertex] = []

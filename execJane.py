@@ -22,6 +22,11 @@ fileNum = 100
 initPopulationSize = 30
 numOfGenerations = 30
 
+def runJane(fileName, popSize, numGen, dVal, tVal, lVal):
+    '''runs Jane in the command line, saves the output in a file, and returns the file name'''
+    os.system("./Jane/jane-cli.sh -C -p " + str(popSize) + " -i " + str(numGen) + " -c 0 " + str(dVal) + " " + str(tVal) + " " + str(lVal) + " 0 " + str(fileName) + " > janeOut.txt") 
+    return "janeOut.txt"
+
 def main():
 
 	if not os.path.exists("janeOut"):
