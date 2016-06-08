@@ -65,23 +65,24 @@ def parseNewick(newickString, treeType):
     """ Queries the user for a newick file name and returns the contents
         of that file in the dictionary representation used by the xscape
         tools. """
-    tree = Phylo.read(StringIO(newickString), "newick")
-    distanceDict = tree.depths(unit_branch_lengths=True)
+    tree = Phylo.read(StringIO(newickString), "newick") #reads in a single tree
+    distanceDict = tree.depths(unit_branch_lengths=True) #dictionary keys contain the name of the node and the branch length, value for each key is the depth of the node 
     D = {}
-    for clade in distanceDict:
+    for clade in distanceDict: #Dictionary created here only records the name of the node and it's associated depth, the branchlength is not important.
         name = clade.name
         dist = distanceDict[clade]
-        D[name] = dist
-    dfsList = [(node.name, int(D[node.name])) for node in tree.find_clades()]
+        D[name] = dist #dist is the depth of the node
+    dfsList = [(node.name, int(D[node.name])) for node in tree.find_clades()] #creates a list with tuples of the name of the node and the depth of that node
     treeDict = {}
-    buildTreeDictionary(buildTree(dfsList), "Top", treeDict, treeType)
+    buildTreeDictionary(buildTree(dfsList), "Top", treeDict, treeType) 
     return treeDict
 
 def buildTree(dfsList):
-    """ Takes as input a list of tuples of the form (nodeName, distanceFromRoot)
+    """ Takes as input a list of tuples of the form (nodeName, distanceFromRoot (aka depth))
         and returns a tuple representation of the tree of the form
         (Root, Left, Right) where Left and Right are themselves of this form
-        or None. This is an intermediate tree representation that can then
+        or 'None'. The Root is just the name of the node.
+        This is an intermediate tree representation that can then
         be used to build the dictionary representation of trees used in
         the xscape tools."""
     if len(dfsList) == 1:
@@ -101,7 +102,7 @@ def buildTree(dfsList):
         return (rootName, leftTree, rightTree)
 
 def buildTreeDictionary(tupleTree, parentVertex, D, treeType):
-    """ Takes as input a tuple representation of a tree (constructed by
+    """ Takes as input a tuple (Root, Left, Right) representation of a tree (constructed by
         the buildTree function, for example) and returns the dictionary
         representation of the tree used by the xscape tools. """
     root = tupleTree[0]

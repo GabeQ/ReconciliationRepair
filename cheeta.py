@@ -48,23 +48,26 @@ def main():
         newickFile = fileName
         treeFile = ntp.newickToTreeParser(fileName)
     else:
-        print 'The file must be of .tree or .newick format'
+        print "The file must be in either '.tree' or '.newick' format"
         return
         
     #run the DP with .newick file
     DTL, numRecon, DPCost = DP.reconcile(newickFile, dVal, tVal, lVal)
-    
+
     #test if the DP is temporally consistent
     recs, allRecs = MasterReconciliation.Reconcile(["", fileName, str(dVal), str(tVal), str(lVal), "unit", 0, 1, 0, 1])
     if len(recs) == 0: #no infeasible reconciliations found --> no need for fixer algorithm
         fixerCost = float('inf')
     else:
         fixerCost = fixer.fixer(newickFile, dVal, tVal, lVal) #run fixer.py with .newick file       
-        
+
+    #run fixer.py with .newick file
+    fixerCost = fixer.fixer(newickFile, dVal, tVal, lVal)
+
     #run Jane with .tree file
     janeOut = execJane.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
     janeCost = cjc.janeCost(janeOut, dVal, tVal, lVal)
-    
+
     #compare fixer score with Jane score
     if DPCost == janeCost: #Jane's solution is optimal
         print "Jane Solution Cost: " + str(janeCost)
@@ -82,8 +85,6 @@ def main():
         print "Theoretical Lower Bound: " + str(DPCost)
         print "Cheeta was unable to find a valid solution better than Jane"
         print "You may wish to try running Jane again with larger values for the population and/or generation parameters"
-        return
         
-    
 if __name__ == '__main__':
     main()
