@@ -22,6 +22,7 @@ import makePlot
 import MasterReconciliation
 import newickFormatReader as nfr
 import newickToTreeParser as ntp
+import treeToNewickParser as ptn
 import orderGraph
 import ReconciliationGraph as rg
 import sys
@@ -42,14 +43,17 @@ def main():
     numGen = int(sys.argv[6])
     newickFile = None
     treeFile = None
+    tempFileToRemove = None
     
     #file converter (still waiting on treeToNewickParser)
     if '.tree' in fileName:
         treeFile = fileName
-        newickFile = None
-    elif '.newick' in fileName:
+        newickFile = ptn.treeToNewickParser(fileName)
+        tempFileToRemove = newickFile
+    elif '.newick' in fileName or '.nwk' in fileName:
         newickFile = fileName
         treeFile = ntp.newickToTreeParser(fileName)
+        tempFileToRemove = treeFile
     else:
         print "The file must be in either '.tree' or '.newick' format"
         return
@@ -65,14 +69,14 @@ def main():
     if fixerCost == janeCost or janeCost < fixerCost:
         print "Jane's solution is optimal"
         print "Optimal Cost: " + janeCost
-        return
     elif fixerCost < janeCost:
         print "Jane's solution may or may not be optimal, try running Jane with a larger population size and more generations"
         print "Lower Bound Cost: " #returns the DP output
         print "Jane Cost: " + janeCost
         print "Fixer Cost: " + fixerCost
-        
-        return
+    
+    os.remove(tempFileToRemove)
+    return
     
 if __name__ == '__main__':
     main()

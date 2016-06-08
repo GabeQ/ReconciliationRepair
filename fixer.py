@@ -238,7 +238,6 @@ def fixer(fileName, dup, trans, loss):
     S_dict, G_dict, _ = newickFormatReader.getInput(fileName)
     S, G = eteTreeReader(fileName)
     recs, allRecs = MasterReconciliation.Reconcile(["", fileName, dVal, tVal, lVal, "unit", 0, 1, 0, 1])
-    print 'lol'
     totRecs = len(allRecs)
 
     print "# of Reconciliations: {0}".format(totRecs)

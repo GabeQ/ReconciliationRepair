@@ -35,10 +35,7 @@
 # node numbers should appear).
 
 # python libraries
-from cStringIO import StringIO
-import os.path
-import os
-
+import tempfile
 import newickFormatReader
 from ReconciliationGraph import treeFormat
 
@@ -46,8 +43,7 @@ from ReconciliationGraph import treeFormat
 #Changed to take in a newick file rather than be a main function
 def newickToTreeParser(newickFile):	
 
-    
-    outFile = open("out.tree", 'w')
+    outFile = tempfile.NameTemporaryFile(delete=False)
 
     host, parasite, phi = newickFormatReader.getInput(newickFile)
     H = treeFormat(host)
@@ -94,4 +90,4 @@ def newickToTreeParser(newickFile):
         outFile.write(str(H_dict[phi[key]]) + "\t" + str(P_dict[key]) + "\n")
 
     outFile.close()
-    return "out.tree"
+    return outFile.name
