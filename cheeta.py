@@ -1,9 +1,3 @@
-import calcJaneCost
-import DP
-import execJane
-import fixer
-import Greedy
-import makePlot
 #cheeta.py
 
 #Created by Matt Dohlen, Chen Pekker, Gabriel Quiroz
@@ -18,45 +12,67 @@ import makePlot
 #a better solution, or whether there may be a better solution with larger input
 #values for Jane.
 
+
+import calcJaneCost as cjc
+import DP
+import execJane
+import fixer
+import Greedy
+import makePlot
 import MasterReconciliation
 import newickFormatReader as nfr
 import newickToTreeParser as ntp
 import orderGraph
 import ReconciliationGraph as rg
 import sys
+import os
 
-    
+
+def runJane(fileName, popSize, numGen, dVal, tVal, lVal):
+    os.system("./Jane/jane-cli.sh -C -p " + str(popSize) + " -i " + str(numGen) + " -c 0 " + str(dVal) + " " + str(tVal) + " " + str(lVal) + " 0 " + str(fileName) + " > janeOut.txt") 
+    return "janeOut.txt"
+                        
 def main():
-    #arguments
+    #arguments to be provided in the command line
     fileName = sys.argv[1]
-    dupCost = sys.argv[2]
-    transCost = sys.argv[3]
-    lossCost = sys.argv[4]
-    popSize = sys.argv[5]
-    numGen = sys.argv[6]
+    dVal = int(sys.argv[2])
+    tVal = int(sys.argv[3])
+    lVal = int(sys.argv[4])
+    popSize = int(sys.argv[5])
+    numGen = int(sys.argv[6])
     newickFile = None
     treeFile = None
     
-    #file converter
-    if fileName.contains('.tree'):
+    #file converter (still waiting on treeToNewickParser)
+    if '.tree' in fileName:
         treeFile = fileName
         newickFile = None
-    elif fileName.contains('.newick'):
+    elif '.newick' in fileName:
         newickFile = fileName
         treeFile = ntp.newickToTreeParser(fileName)
     else:
-        print 'The file must be of .tree or .newick format'
+        print "The file must be in either '.tree' or '.newick' format"
         return
     
     #run fixer.py with .newick file
-    fixerCost = fixer(newickFile, dupCost, transCost, lossCost)
+    fixerCost = fixer.fixer(newickFile, dVal, tVal, lVal)
     
     #run Jane with .tree file
-    janeCost = 
-        
-    #compare fixer score with jane score    
+    janeOut = runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
+    janeCost = cjc.janeCost(janeOut, dVal, tVal, lVal)
     
-    return
-
+    #compare fixer score with Jane score, print results to user
+    if fixerCost == janeCost or janeCost < fixerCost:
+        print "Jane's solution is optimal"
+        print "Optimal Cost: " + janeCost
+        return
+    elif fixerCost < janeCost:
+        print "Jane's solution may or may not be optimal, try running Jane with a larger population size and more generations"
+        print "Lower Bound Cost: " #returns the DP output
+        print "Jane Cost: " + janeCost
+        print "Fixer Cost: " + fixerCost
+        
+        return
+    
 if __name__ == '__main__':
     main()
