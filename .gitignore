@@ -8,6 +8,7 @@ highDTL/
 lowDTL/
 mediumDTL/
 janeOut.txt/
+.idea/
 
 #OS junk files
 [Tt]humbs.db

@@ -40,7 +40,6 @@ def newickFormatReader(fileHandle):
     
     if isinstance(fileHandle, basestring):
         fileHandle = open(fileHandle, 'r')
-        print 'open file: ' + fileHandle
         autoclose = True
     else:
         autoclose = False
