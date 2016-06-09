@@ -67,11 +67,15 @@ def main():
         print "Jane Solution Cost: " + str(janeCost)
         print "Theoretical Lower Bound: " + str(DPCost)
         print "Jane's Solution is Optimal"
+        return
+
     elif fixerCost < janeCost: #fixer found a better solution than Jane
         print "Jane Solution Cost: " + str(janeCost)
         print "Theoretical Lower Bound: " + str(DPCost)
         print "Cheeta found a valid solution of cost: " + str(fixerCost)
         print "You may wish to try running Jane again with larger values for the population and/or generation parameters"
+        return
+
     else: #fixer was unable to find a better solution than Jane
         print "Jane Solution Cost: " + str(janeCost)
         print "Theoretical Lower Bound: " + str(DPCost)

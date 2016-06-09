@@ -43,7 +43,7 @@ from ReconciliationGraph import treeFormat
 #Changed to take in a newick file rather than be a main function
 def newickToTreeParser(newickFile):	
 
-    outFile = tempfile.NameTemporaryFile(delete=False)
+    outFile = tempfile.NamedTemporaryFile(delete=False)
 
     host, parasite, phi = newickFormatReader.getInput(newickFile)
     H = treeFormat(host)

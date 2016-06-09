@@ -3,7 +3,13 @@
 #Created by Matt Dohlen, Chen Pekker, Gabriel Quiroz
 #June 2016
 
-from cStringIO import StringIO
+#This file contains functions that are used in order to convert a .tree file into 
+#a .newick file so that we could run cheeta. TreeToNewickParser reads through the
+#.tree file, creates dictionaries of each parent and child node combination as well
+#as dictionaries containing the names of node, and uses a networkx graph to construct
+#the newick tree. It does this for both the host and parasite trees, and then parses 
+#the phi connections.
+
 import networkx as nx
 import tempfile
 
