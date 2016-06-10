@@ -3,12 +3,12 @@
 # modified from 'makePlot.py' by Chen Pekker
 # June 2016
 #
-# This file plots the results of fixer and Jane into costs of temporally consistent reconciliations found 
-# by TemporalConsistencyFixer algorithm as well as those found by Jane 
-# against file indices.
+# This file plots the results of fixer and Jane by groups (deteremined by the algorithm responsible for the best solution of that sample). 
+# Within groups the samples are plotted in order of increasing Jane score.
+# The costs of the temporally consistent reconciliations are found by the TemporalConsistencyFixer algorithm and Jane.
 #
 # Run with
-#   python makePlot.py
+#   python makeSortedPlot.py
 
 import os
 import os.path
