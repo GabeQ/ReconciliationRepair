@@ -12,6 +12,7 @@
 
 import networkx as nx
 import tempfile
+from exceptions import FileFormatError
 
 def readTree(content, lineNum):
     entryDict = {}
@@ -21,13 +22,9 @@ def readTree(content, lineNum):
             break
         entry = content[lineNum].split()
         if len(entry) < 3:
-            return
-            #throw
-            #throw new FileFormatException("The keyword null is required to identify tip edges in the .tree file format");
+            raise FileFormatError("The keyword null is required to identify tip edges in the .tree file format");
         if len(entry) > 3:
-            return
-            #throw
-            #throw "No polytomy allowed"
+            raise FileFormatError("No polytomy allowed")
         name = entry[0]
         entryDict[name] = (entry[1], entry[2])
         count += 1
@@ -41,9 +38,7 @@ def readNames(content, lineNum):
             break
         entry = content[lineNum].split()
         if len(entry) != 2:
-            return
-            #throw
-            # 'Improperly formatted names'
+            raise FileFormatError("Improperly formatted names section")
         names[entry[0]] = entry[1]
         lineNum += 1
     return names
@@ -55,9 +50,7 @@ def readPhi(content, lineNum):
             break
         entry = content[lineNum].split()
         if len(entry) != 2:
-            return
-            #throw
-            # 'Improperly formatted phi'
+            raise FileFormatError("Improperly formatted phi")
         phi.append((entry[0], entry[1]))
         lineNum += 1
     return phi
@@ -99,31 +92,31 @@ def treeToNewickParser(treeFile):
     f = open(treeFile, 'r')
     content = f.readlines()
     index = 1
-    
+
     # HOSTTREE
     hostDict, numHost = readTree(content, index)
     index = index + numHost + 2
     # HOSTNAME
     hostNames = readNames(content, index)
     index = index + numHost + 2
-    
+
     hostTreeStr = createTree(hostDict, hostNames)
-    
+
     # PARASITETREE
     parasDict, numParas = readTree(content, index)
     index = index + numParas + 2
     # PARASITENAMES
     parasNames = readNames(content, index)
     index = index + numParas + 2
-    
+
     parasTreeStr = createTree(parasDict, parasNames)
-    
+
     # PHI
     phiList = readPhi(content, index)
     phiStr = namePhi(phiList, hostNames, parasNames)
-    
-    fileStr = hostTreeStr + ";\n" + parasTreeStr + ";\n" + phiStr
-    
+
+    fileStr = hostTreeStr + ";\n" + parasTreeStr + ";\n" + phiStr + "\n"
+
     temp = tempfile.NamedTemporaryFile(delete=False)
     temp.write(fileStr)
     temp.close()
