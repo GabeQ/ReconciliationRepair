@@ -42,10 +42,9 @@ def findGroups(fileNum):
         scores = []
 	for i in fileNum:
 		index = str(i)
-	#	print "index before: " + index
-	#	for j in xrange(4 - len(str(i + 1))):
-	#		index = "0" + index
-		f = "janeCosts/G" + index + ".txt"
+		for j in xrange(4 - len(str(i + 1))):
+			index = "0" + index
+		f = "janeCosts/COG" + index + ".txt"
 		if not os.path.isfile(f):
 			continue
 		janeFile = open(f, 'r')
@@ -55,12 +54,12 @@ def findGroups(fileNum):
 		print "Jane:", int(lines[-1])
 		janeFile.close()
 		
-		f = "fixerOut/G" + index + ".txt"
+		f = "fixerOut/COG" + index + ".txt"
 		fixerFile = open(f, 'r')
 		for line in fixerFile:
 			if line.startswith("min total:"):
 				if line.startswith("min total: None"):
-					fileName = "real-100taxa/G" + index + ".newick"
+					fileName = "real-100taxa/COG" + index + ".newick"
 					recs, allRecs = MasterReconciliation.Reconcile(["", fileName, str(dVal), str(tVal), str(lVal), "unit", "0", "1", "0", "1"])
 					T = allRecs[0]
 					d, s, t, l = 0, 0, 0, 0
@@ -106,17 +105,15 @@ def janeSort(list):
         scores = []
 	for i in fileNum:
 		index = str(i)
-		print "index B4: " + index
-	#	for j in xrange(4 - len(str(i + 1))):
-	#		index = "0" + index
-		f = "janeCosts/G" + index + ".txt"
+		for j in xrange(4 - len(str(i + 1))):
+			index = "0" + index
+		f = "janeCosts/COG" + index + ".txt"
 		if not os.path.isfile(f):
 			continue
 
 		if i in janeMemo:
 		    janeScore = janeMemo[i]
 		else:
-		        print "NEEDED TO GO IN THE 'ELSE CASE' FOR JANE in janeSORT"
 		        janeFile = open(f, 'r')
           		lines = janeFile.readlines()
           		janeScore = int(lines[-1])
@@ -169,17 +166,16 @@ def main():
 	        count +=1
 	        janeX.append(count)
 		index = str(i)
-		print "index B4: " + index
-	#	for j in xrange(4 - len(str(i + 1))):
-	#		index = "0" + index
-		f = "janeCosts/G" + index + ".txt"
+		print "index before: " + index
+		for j in xrange(4 - len(str(i + 1))):
+			index = "0" + index
+		f = "janeCosts/COG" + index + ".txt"
 		if not os.path.isfile(f):
 			continue
 
 		if i in janeMemo:
 		    janeList.append(janeMemo[i])
 		else:
-		        print "NEEDED TO GO IN THE 'ELSE CASE' FOR JANE"
 		        janeFile = open(f, 'r')
           		lines = janeFile.readlines()
           		janeList.append(int(lines[-1]))
@@ -192,13 +188,12 @@ def main():
 		    optimalList.append(optimalMemo[i])
 		    optimalX.append(count)
 		else:
-		        print "NEEDED TO GO IN THE 'ELSE CASE' FOR FIXER/OPTIMAL"
-		        f = "fixerOut/G" + index + ".txt"
+		        f = "fixerOut/COG" + index + ".txt"
           		fixerFile = open(f, 'r')
           		for line in fixerFile:
          			if line.startswith("min total:"):
             				if line.startswith("min total: None"):
-           					fileName = "real-100taxa/G" + index + ".newick"
+           					fileName = "real-100taxa/COG" + index + ".newick"
            					recs, allRecs = MasterReconciliation.Reconcile(["", fileName, str(dVal), str(tVal), str(lVal), "unit", "0", "1", "0", "1"])
            					T = allRecs[0]
            					d, s, t, l = 0, 0, 0, 0
@@ -215,12 +210,10 @@ def main():
            					optimalList.append(score)
            					optimalX.append(count)
            					print "Optimal:", score
-           					print "NEEDED TO GO IN for OPTIMAL"
             				else:
            					fixerList.append(int(line[11:]))
            					fixerX.append(count)
            					print "Fixer:", int(line[11:])
-           					print "NEEDED TO GO IN for FIXER"
           		fixerFile.close()
           		print "Done ", index	    
         fig, ax = plt.subplots()
@@ -234,10 +227,12 @@ def main():
 	plt.grid()
 	#plt.xticks(np.arange(0, count, 100))
 	legend = ax.legend(loc='upper right', numpoints = 1)
+	
 	# Set the fontsize
         for label in legend.get_texts():
             label.set_fontsize('xx-large')
         plt.show()
+        
 
 if __name__ == "__main__":
 	main()
