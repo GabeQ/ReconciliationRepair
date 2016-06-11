@@ -3,6 +3,9 @@
 # Weiyun Ma, Dima Smirnov
 # May 2016
 #
+# modified by Chen Pekker
+# June 2016
+#
 # This file plots costs of temporally consistent reconciliations found 
 # by TemporalConsistencyFixer algorithm as well as those found by Jane 
 # against file indices.
@@ -40,7 +43,7 @@ def main():
 		for j in xrange(4 - len(str(i + 1))):
 			index = "0" + index
 
-		f = "janeCosts/COG" + index + ".txt"
+		f = "janeCosts/COG" + index + ".txt" #extention can be changed
 
 		if not os.path.isfile(f):
 			continue
