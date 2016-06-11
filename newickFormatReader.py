@@ -15,21 +15,12 @@
 # of strings of the form:
 # (topVertex, bottomVertex, leftEdgeName, rightEdgeName)
 
-# python libraries
 from cStringIO import StringIO
-
-# BioPython libraries
 from Bio import Phylo
-
-def getInput(fileName):
-    """ Takes a fileName as input and returns the hostTree, parasiteTree, and tip mapping phi. """
+import exceptions as ex
+import errno
     
-    fileHandle = open(fileName, 'r')
-    hostTree, parasiteTree, phi = newickFormatReader(fileHandle)
-    fileHandle.close()
-    return hostTree, parasiteTree, phi
-    
-def newickFormatReader(fileHandle):
+def newickFormatReader(fileName):
     """ Queries the user for a newick host tree, newick parasite tree, and
         a tip association file.  Reads those files, parses them, and returns
         the three items.  The file of associations contains entries of the form
@@ -37,29 +28,33 @@ def newickFormatReader(fileHandle):
         The trees are returned in the dictionary format
         used by xscape and the tip associations are returned as a dictionary
         with parasite names as keys and host tips as values. """
-    
-    if isinstance(fileHandle, basestring):
-        fileHandle = open(fileHandle, 'r')
-        autoclose = True
-    else:
-        autoclose = False
+    try:
+        fileHandle = open(fileName, 'r')
 
-    # Read contents, split the host tree, parasite tree, and tip associations
-    contents = fileHandle.read()
-    hostString, parasiteString, phiString = contents.split(";")
-    hostString = hostString.strip()
-    parasiteString = parasiteString.strip()
-    phiList = phiString.split()
-    
-    # Parse the input and build dictionary representations
-    hostDict = parseNewick(hostString, "host")
-    parasiteDict = parseNewick(parasiteString, "parasite")
-    phiDict = parsePhi(phiList)
+        # Read contents, split the host tree, parasite tree, and tip associations
+        contents = fileHandle.read()
+        hostString, parasiteString, phiString = contents.split(";")
+        hostString = hostString.strip()
+        parasiteString = parasiteString.strip()
+        phiList = phiString.split()
 
-    if autoclose:
+        # Parse the input and build dictionary representations
+        hostDict = parseNewick(hostString, "host")
+        parasiteDict = parseNewick(parasiteString, "parasite")
+        phiDict = parsePhi(phiList)
+
         fileHandle.close()
-    
-    return hostDict, parasiteDict, phiDict
+
+        return hostDict, parasiteDict, phiDict
+    except (OSError, IOError) as e:
+        if e.errno == errno.ENOENT:
+            raise ex.FileParseError(fileName, "File access error - File does not exist")
+        elif e.errno == errno.EACCES:
+            raise ex.FileParseError(fileName, "File access error - Access denied")
+        else:
+            raise ex.FileParseError(fileName, "Could not access file")
+    except:
+        raise ex.FileParseError(fileName, "Unable to parse file")
 
 def parseNewick(newickString, treeType):
     """ Queries the user for a newick file name and returns the contents
@@ -141,5 +136,4 @@ def parsePhi(pairs):
         value = host.strip()
         phiDict[key] = value
     return phiDict
-    
-    
+

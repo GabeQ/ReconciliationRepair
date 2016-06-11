@@ -9,10 +9,10 @@
 #as dictionaries containing the names of node, and uses a networkx graph to construct
 #the newick tree. It does this for both the host and parasite trees, and then parses 
 #the phi connections.
-
+import errno
 import networkx as nx
 import tempfile
-from exceptions import FileFormatError
+import exceptions as ex
 
 def readTree(content, lineNum):
     entryDict = {}
@@ -22,9 +22,9 @@ def readTree(content, lineNum):
             break
         entry = content[lineNum].split()
         if len(entry) < 3:
-            raise FileFormatError("The keyword null is required to identify tip edges in the .tree file format");
+            raise ex.FileFormatError("The keyword null is required to identify tip edges in the .tree file format");
         if len(entry) > 3:
-            raise FileFormatError("No polytomy allowed")
+            raise ex.FileFormatError("No polytomy allowed")
         name = entry[0]
         entryDict[name] = (entry[1], entry[2])
         count += 1
@@ -38,7 +38,7 @@ def readNames(content, lineNum):
             break
         entry = content[lineNum].split()
         if len(entry) != 2:
-            raise FileFormatError("Improperly formatted names section")
+            raise ex.FileFormatError("Improperly formatted names section")
         names[entry[0]] = entry[1]
         lineNum += 1
     return names
@@ -50,7 +50,7 @@ def readPhi(content, lineNum):
             break
         entry = content[lineNum].split()
         if len(entry) != 2:
-            raise FileFormatError("Improperly formatted phi")
+            raise ex.FileFormatError("Improperly formatted phi")
         phi.append((entry[0], entry[1]))
         lineNum += 1
     return phi
@@ -89,35 +89,50 @@ def createTree(treeDict, treeNames):
     return toNewick(treeGraph, root)
     
 def treeToNewickParser(treeFile):
-    f = open(treeFile, 'r')
-    content = f.readlines()
-    index = 1
+    try:
+        f = open(treeFile, 'r')
+        content = f.readlines()
+        f.close()
+    except (OSError, IOError) as e:
+        if e.errno == errno.ENOENT:
+            raise ex.FileParseError(treeFile, "File access error - File does not exist")
+        elif e.errno == errno.EACCES:
+            raise ex.FileParseError(treeFile, "File access error - Access denied")
+        else:
+            raise ex.FileParseError(treeFile, "Could not access file")
 
-    # HOSTTREE
-    hostDict, numHost = readTree(content, index)
-    index = index + numHost + 2
-    # HOSTNAME
-    hostNames = readNames(content, index)
-    index = index + numHost + 2
+    try:
+        index = 1
 
-    hostTreeStr = createTree(hostDict, hostNames)
+        # HOSTTREE
+        hostDict, numHost = readTree(content, index)
+        index = index + numHost + 2
+        # HOSTNAME
+        hostNames = readNames(content, index)
+        index = index + numHost + 2
 
-    # PARASITETREE
-    parasDict, numParas = readTree(content, index)
-    index = index + numParas + 2
-    # PARASITENAMES
-    parasNames = readNames(content, index)
-    index = index + numParas + 2
+        hostTreeStr = createTree(hostDict, hostNames)
 
-    parasTreeStr = createTree(parasDict, parasNames)
+        # PARASITETREE
+        parasDict, numParas = readTree(content, index)
+        index = index + numParas + 2
+        # PARASITENAMES
+        parasNames = readNames(content, index)
+        index = index + numParas + 2
 
-    # PHI
-    phiList = readPhi(content, index)
-    phiStr = namePhi(phiList, hostNames, parasNames)
+        parasTreeStr = createTree(parasDict, parasNames)
 
-    fileStr = hostTreeStr + ";\n" + parasTreeStr + ";\n" + phiStr + "\n"
+        # PHI
+        phiList = readPhi(content, index)
+        phiStr = namePhi(phiList, hostNames, parasNames)
 
-    temp = tempfile.NamedTemporaryFile(delete=False)
-    temp.write(fileStr)
-    temp.close()
-    return temp.name
+        fileStr = hostTreeStr + ";\n" + parasTreeStr + ";\n" + phiStr + "\n"
+
+        temp = tempfile.NamedTemporaryFile(delete=False)
+        temp.write(fileStr)
+        temp.close()
+        return temp.name
+    except ex.FileFormatError as e:
+        raise ex.FileParseError(treeFile, "File format error - " + e.message)
+    except:
+        raise ex.FileParseError(treeFile, "Could not parse file - Check to see file formatting is correct")

@@ -14,7 +14,7 @@
 # the DTL reconciliation graph that uses frequency scoring, as well as the
 # number of reconciliations of the host and parasite trees
 
-import newickFormatReader
+from newickFormatReader import newickFormatReader
 import Greedy
 import copy
 
@@ -398,5 +398,5 @@ def reconcile(fileName, D, T, L):
     cost, and a loss cost. This uses newickFormatReader to extract the host 
     tree, parasite tree and tip mapping from the file and then calls DP to 
     return the DTL reconciliation graph of the provided newick file"""
-    host, paras, phi = newickFormatReader.getInput(fileName)
+    host, paras, phi = newickFormatReader(fileName)
     return DP(host, paras, phi, D, T, L)
