@@ -32,18 +32,30 @@ verbose = False
 limit = None
 
 def usage():
-    print "usage: cheeta.py [-v] [-l {limit}] [-c {dupCost, transCost, lossCost}] [-p {popSize, numGen}] file"
+    print "usage: cheeta.py [-help] [-v] [-l {limit}] [-c {dupCost, transCost, lossCost}] [-p {popSize, numGen}] file"
     exit(1)
 
+def help():
+    print 'usage: python cheeta.py [-options] filename\n\n' + \
+    'Where [-options] include:\n' + \
+    '\t-help\t\tPrint this message\n' + \
+    '\t-V\t\tTurns on verbose output\n' + \
+    '\t-l\t\tPlaces a limit on the number of infeasible recs fix() looks at\n' + \
+    '\t-C\t\tAllows user to input costs for duplications, transfers, and losses respectively\n' + \
+    '\t-P\t\tAllows user to input parameters for popSize and numGen\n'
+    exit(0)
 
 def readArgs():
     global fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit
     
     i = 1
+    if sys.argv[i] == '-h' or sys.argv[i] == '-help' or sys.argv[i] == '--h' or sys.argv[i] == '--help' or sys.argv[i] == '-?':
+        help()
+        
     if len(sys.argv) > 2:
         while i < len(sys.argv) - 1:
-            
-            if sys.argv[i] == '-v':
+        
+            if sys.argv[i] == '-V':
                 verbose = True
                 i += 1
             elif sys.argv[i] == '-l':
@@ -52,7 +64,7 @@ def readArgs():
                     i += 2
                 except:
                     usage()
-            elif sys.argv[i] == '-c':
+            elif sys.argv[i] == '-C':
                 try:
                     dVal = int(sys.argv[i+1])
                     tVal = int(sys.argv[i+2])
@@ -60,7 +72,7 @@ def readArgs():
                     i += 4
                 except:
                     usage()
-            elif sys.argv[i] == '-p':
+            elif sys.argv[i] == '-P':
                 try:
                     popSize = int(sys.argv[i+1])
                     numGen = int(sys.argv[i+2])
@@ -104,7 +116,7 @@ def main():
             print "The file must be in either '.tree' or '.newick' format"
             sys.exit(1)
 
-        fixerCost, DPCost = fixer.fix(newickFile, dVal, tVal, lVal) # run fixer.py with .newick file
+        fixerCost, DPCost = fixer.fix(newickFile, dVal, tVal, lVal, verbose, limit) # run fixer.py with .newick file
 
         # run Jane with .tree file
         janeOut = JaneUtil.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)

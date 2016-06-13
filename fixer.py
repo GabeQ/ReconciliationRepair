@@ -223,26 +223,26 @@ def eteTreeReader(fileName):
     return hostTree, parasiteTree
 
 
-def fix(fileName, dup, trans, loss, limit):
+def fix(fileName, dup, trans, loss, verbose, limit):
     global dVal, tVal, lVal
     dVal = dup
     tVal = trans
     lVal = loss
-
-    #print fileName
 
     try:
         S_dict, G_dict, _ = newickFormatReader(fileName)
         S, G = eteTreeReader(fileName)
         recs, allRecs, DPCost = MasterReconciliation.Reconcile(["", fileName, str(dVal), str(tVal), str(lVal), "unit", 0, 1, 0, 1])
         totRecs = len(allRecs)
-
-        #print "# of Reconciliations: {0}".format(totRecs)
-        #print "# of Infeasible Reconciliations: {0}".format(len(recs))
+        
+        if verbose == True:
+            print fileName
+            print "# of Reconciliations: {0}".format(totRecs)
+            print "# of Infeasible Reconciliations: {0}".format(len(recs))
 
         min_cost = None
 
-        if limit == None:
+        if limit == None  or limit >= len(recs):
             limit = len(recs)
 
         for T in recs[0:limit]:
@@ -252,7 +252,8 @@ def fix(fileName, dup, trans, loss, limit):
             cost = out(S, G, alpha)
             if min_cost is None or cost < min_cost:
                 min_cost = cost
-            #print "number of operations: {0}".format(pull_up)
+            if verbose == True:
+                print "number of operations: {0}".format(pull_up)
     except ex.CheetaError:
         raise
     except Exception as e:
