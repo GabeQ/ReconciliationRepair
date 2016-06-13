@@ -22,15 +22,67 @@ import newickToTreeParser as ntp
 import treeToNewickParser as ptn
 import sys
 import os
+
+fileName = None
+dVal = 2
+tVal = 3
+lVal = 1
+popSize = 30
+numGen = 30
+verbose = False
+limit = None
+
+def usage():
+    print "usage: cheeta.py [-v] [-l {limit}] [-c {dupCost, transCost, lossCost}] [-p {popSize, numGen}] file"
+    exit(1)
+
+
+def readArgs():
+    global fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit
+    
+    i = 1
+    while i < len(sys.argv) - 1:
+        
+        if sys.argv[i] == '-v':
+            verbose = True
+            i += 1
+        elif sys.argv[i] == '-l':
+            try:
+                limit = sys.argv[i+1]
+                i += 2
+            except:
+                usage()
+        elif sys.argv[i] == '-c':
+            try:
+                dVal = int(sys.argv[i+1])
+                tVal = int(sys.argv[i+2])
+                lVal = int(sys.argv[i+3])
+                i += 4
+            except:
+                usage()
+        elif sys.argv[i] == '-p':
+            try:
+                popSize = int(sys.argv[i+1])
+                numGen = int(sys.argv[i+2])
+                i += 3
+            except:
+                usage()
+        else:
+            print 'Command not recognized'
+            usage()
+    if '.tree' not in sys.argv[i] or '.newick' not in sys.argv[i]:
+        print 'No filename ending in .tree or .newick provided'
+        usage()
+    else:
+        fileName = sys.argv[i]
+            
+                
+        
+    
                        
 def main():
-    #arguments to be provided in the command line
-    fileName = sys.argv[1]
-    dVal = int(sys.argv[2])
-    tVal = int(sys.argv[3])
-    lVal = int(sys.argv[4])
-    popSize = int(sys.argv[5])
-    numGen = int(sys.argv[6])
+    
+    readArgs()
     newickFile = None
     treeFile = None
     tempFileToRemove = None
@@ -53,10 +105,13 @@ def main():
 
     #test if the DP is temporally consistent
     recs, allRecs = MasterReconciliation.Reconcile(["", newickFile, dVal, tVal, lVal, "unit", 0, 1, 0, 1])
+    if verbose == True:
+        print 'Number of reconciliations: {0}\n'.format(len(allRecs))
+        print 'Number of infeasible reconciliations: {0}\n'.format(len(recs))
     if len(recs) == 0: #no infeasible reconciliations found --> no need for fixer algorithm
         fixerCost = float('inf')
     else:
-        fixerCost = fixer.fix(newickFile, dVal, tVal, lVal) #run fixer.py with .newick file       
+        fixerCost = fixer.fix(newickFile, dVal, tVal, lVal, limit) #run fixer.py with .newick file       
 
     #run Jane with .tree file
     janeOut = JaneUtil.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)

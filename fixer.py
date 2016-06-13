@@ -227,7 +227,7 @@ def eteTreeReader(fileName):
     return hostTree, parasiteTree
 
 
-def fix(fileName, dup, trans, loss):
+def fix(fileName, dup, trans, loss, limit):
     global dVal, tVal, lVal
     dVal = dup
     tVal = trans
@@ -244,8 +244,11 @@ def fix(fileName, dup, trans, loss):
     #print "# of Infeasible Reconciliations: {0}".format(len(recs))
 
     min_cost = None
+    
+    if limit == None:
+        limit = len(recs)
 
-    for T in recs:
+    for T in recs[0:limit]:
         alpha = recon_tree_to_dtl(T)
         out(S, G, alpha)
         alpha, pull_up = temporal_consistency_fixer(G, G_dict, S, S_dict, alpha)
