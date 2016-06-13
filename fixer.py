@@ -223,7 +223,7 @@ def eteTreeReader(fileName):
     return hostTree, parasiteTree
 
 
-def fix(fileName, dup, trans, loss):
+def fix(fileName, dup, trans, loss, limit):
     global dVal, tVal, lVal
     dVal = dup
     tVal = trans
@@ -242,7 +242,10 @@ def fix(fileName, dup, trans, loss):
 
         min_cost = None
 
-        for T in recs:
+        if limit == None:
+            limit = len(recs)
+
+        for T in recs[0:limit]:
             alpha = recon_tree_to_dtl(T)
             out(S, G, alpha)
             alpha, pull_up = temporal_consistency_fixer(G, G_dict, S, S_dict, alpha)
@@ -256,3 +259,6 @@ def fix(fileName, dup, trans, loss):
         raise ex.CheetaError(ex.CheetaErrorEnum.Alg, ["Fixer", e.message])
 
     return min_cost, DPCost
+    
+
+

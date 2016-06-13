@@ -21,8 +21,70 @@ import treeToNewickParser as ptn
 import exceptions as ex
 import sys
 import os
+
+fileName = None
+dVal = 2
+tVal = 3
+lVal = 1
+popSize = 30
+numGen = 30
+verbose = False
+limit = None
+
+def usage():
+    print "usage: cheeta.py [-v] [-l {limit}] [-c {dupCost, transCost, lossCost}] [-p {popSize, numGen}] file"
+    exit(1)
+
+
+def readArgs():
+    global fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit
+    
+    i = 1
+    if len(sys.argv) > 2:
+        while i < len(sys.argv) - 1:
+            
+            if sys.argv[i] == '-v':
+                verbose = True
+                i += 1
+            elif sys.argv[i] == '-l':
+                try:
+                    limit = sys.argv[i+1]
+                    i += 2
+                except:
+                    usage()
+            elif sys.argv[i] == '-c':
+                try:
+                    dVal = int(sys.argv[i+1])
+                    tVal = int(sys.argv[i+2])
+                    lVal = int(sys.argv[i+3])
+                    i += 4
+                except:
+                    usage()
+            elif sys.argv[i] == '-p':
+                try:
+                    popSize = int(sys.argv[i+1])
+                    numGen = int(sys.argv[i+2])
+                    i += 3
+                except:
+                    usage()
+            else:
+                print 'Command not recognized'
+                usage()
+    print i
+    print sys.argv[i]
+    if '.tree' not in sys.argv[i] or '.newick' not in sys.argv[i]:
+        print 'No filename ending in .tree or .newick provided'
+        usage()
+    else:
+        fileName = sys.argv[i]
+            
+                
+        
+    
                        
 def main():
+    
+    readArgs()
     # arguments to be provided in the command line
     fileName = sys.argv[1]
     dVal = int(sys.argv[2])
@@ -46,7 +108,7 @@ def main():
             tempFileToRemove = treeFile
         else:
             print "The file must be in either '.tree' or '.newick' format"
-            return
+            sys.exit(1)
 
         fixerCost, DPCost = fixer.fix(newickFile, dVal, tVal, lVal) # run fixer.py with .newick file
 
