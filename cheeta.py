@@ -16,7 +16,6 @@
 
 import fixer
 import JaneUtil
-import MasterReconciliation
 import newickToTreeParser as ntp
 import treeToNewickParser as ptn
 import exceptions as ex
@@ -49,22 +48,15 @@ def main():
             print "The file must be in either '.tree' or '.newick' format"
             return
 
-        # test if the DP is temporally consistent
-        recs, allRecs, DPCost = MasterReconciliation.Reconcile(["", newickFile, dVal, tVal, lVal, "unit", 0, 1, 0, 1])
-        if len(recs) == 0:  # no infeasible reconciliations found --> no need for fixer algorithm
-            fixerCost = float('inf')
-        else:
-            fixerCost = fixer.fix(newickFile, dVal, tVal, lVal) # run fixer.py with .newick file
+        fixerCost, DPCost = fixer.fix(newickFile, dVal, tVal, lVal) # run fixer.py with .newick file
 
         # run Jane with .tree file
         janeOut = JaneUtil.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
         janeCost = JaneUtil.janeCost(janeOut, dVal, tVal, lVal)
-    except ex.FileParseError as e:
+    except ex.CheetaError as e:
         print str(e)
-        return
-    except ex.AlgorithmError as e:
-        print str(e)
-        print >> sys.stderr, e.innerError
+        if e.hasInnerError:
+            print >> sys.stderr, e.innerError
         return
     except Exception as e:
         print "Unknown error has occurred"

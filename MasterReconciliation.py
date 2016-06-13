@@ -16,6 +16,7 @@ from sys import argv
 import ReconciliationGraph
 import copy
 import orderGraph
+import exceptions as ex
 
 
 def Reconcile(argList):
@@ -33,25 +34,30 @@ def Reconcile(argList):
     lossLo = float(argList[8])  # Loss lower boundary
     lossHi = float(argList[9])  # Loss upper boundary
 
-    host, paras, phi = newickFormatReader(fileName)
-    hostRoot = ReconciliationGraph.findRoot(host)
-    # Default scoring function (if freqtype== Frequency scoring)
-    DTLReconGraph, numRecon, cost = DP.DP(host, paras, phi, D, T, L)
-    # uses xScape scoring function
-    # if freqType == "xscape":
-    # 	DTLReconGraph = calcCostscapeScore.newScoreWrapper(fileName, switchLo, \
-    # 		switchHi, lossLo, lossHi, D, T, L)
-    # uses Unit scoring function
-    if freqType == "unit":
-        DTLReconGraph = unitScoreDTL(host, paras, phi, D, T, L)
+    try:
+        host, paras, phi = newickFormatReader(fileName)
+        hostRoot = ReconciliationGraph.findRoot(host)
+        # Default scoring function (if freqtype== Frequency scoring)
+        DTLReconGraph, numRecon, cost = DP.DP(host, paras, phi, D, T, L)
+        # uses xScape scoring function
+        # if freqType == "xscape":
+        # 	DTLReconGraph = calcCostscapeScore.newScoreWrapper(fileName, switchLo, \
+        # 		switchHi, lossLo, lossHi, D, T, L)
+        # uses Unit scoring function
+        if freqType == "unit":
+            DTLReconGraph = unitScoreDTL(host, paras, phi, D, T, L)
 
-    DTLGraph = copy.deepcopy(DTLReconGraph)
-    scoresList, recs = Greedy.Greedy(DTLGraph, paras)
+        DTLGraph = copy.deepcopy(DTLReconGraph)
+        scoresList, recs = Greedy.Greedy(DTLGraph, paras)
 
-    infeasible_recs = []
-    for rec in recs:
-        if orderGraph.date(ReconciliationGraph.buildReconciliation(host, paras, rec)) == False:
-            infeasible_recs.append(rec)
+        infeasible_recs = []
+        for rec in recs:
+            if orderGraph.date(ReconciliationGraph.buildReconciliation(host, paras, rec)) == False:
+                infeasible_recs.append(rec)
+    except ex.CheetaError:
+        raise
+    except Exception as e:
+        raise ex.CheetaError(ex.CheetaErrorEnum.Alg, ["Master Reconciliation", e.message])
 
     return infeasible_recs, recs, cost
 
