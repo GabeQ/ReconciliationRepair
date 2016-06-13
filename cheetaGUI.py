@@ -22,7 +22,7 @@
 #base.config(menu = menubar)
 #base.mainloop()
 
-from Tkinter import *
+from Tkinter import Tk, Frame, Menu
 import Tkinter as tk
 #import tkMessageBox
 
@@ -60,13 +60,39 @@ class Application(tk.Frame):
 
     def say_hi(self):
         print("hi there, everyone!")
+        
+class makeMenu(Frame):
+  
+    def __init__(self, parent):
+        Frame.__init__(self, parent)   
+         
+        self.parent = parent        
+        self.initUI()
+        
+        
+    def initUI(self):
+      
+        self.parent.title("Simple menu")
+        
+        menubar = Menu(self.parent)
+        self.parent.config(menu=menubar)
+        
+        fileMenu = Menu(menubar)
+        fileMenu.add_command(label="Upload file", command=self.onExit)
+        fileMenu.add_command(label="Exit", command=self.onExit)
+        menubar.add_cascade(label="File", menu=fileMenu)
+        
+
+    def onExit(self):
+        self.quit()
     
 
 if __name__ == "__main__":
     root = tk.Tk()
     main = MainWindow(root)
-  #  main.title("Cheeta")
- #   main.geometry('800x600+300+300')
+ #   main.title("Cheeta")
     main.pack(side="top", fill="both", expand=True)
     main = Application(master=root)
+    root.geometry('800x600+300+300')
+    app = makeMenu(root)
     root.mainloop()
