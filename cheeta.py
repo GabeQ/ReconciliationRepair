@@ -90,15 +90,6 @@ def main():
     treeFile = None
     tempFileToRemove = None
 
-<<<<<<< HEAD
-    # test if the DP is temporally consistent and get DP Cost
-    recs, allRecs, DPCost = MasterReconciliation.Reconcile(["", newickFile, dVal, tVal, lVal, "unit", 0, 1, 0, 1])
-    
-    if len(recs) == 0:  # no infeasible reconciliations found --> no need for fixer algorithm
-        fixerCost = float('inf')
-    else:
-        fixerCost = fixer.fix(newickFile, dVal, tVal, lVal, limit) # run fixer.py with .newick file
-=======
     try:
         # file converter
         if '.tree' in fileName:
@@ -114,7 +105,6 @@ def main():
             sys.exit(1)
 
         fixerCost, DPCost = fixer.fix(newickFile, dVal, tVal, lVal) # run fixer.py with .newick file
->>>>>>> origin/master
 
         # run Jane with .tree file
         janeOut = JaneUtil.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
