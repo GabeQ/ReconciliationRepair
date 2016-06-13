@@ -7,7 +7,8 @@
 # vertex-based DP algorithm. The main function in this file is called Greedy
 # and the remaining functions are helper functions that are used by Greedy.
 
-import exceptions as ex
+from CheetaExceptions import CheetaError
+from CheetaExceptions import CheetaErrorEnum
 
 def findRoot(Tree):
     """This function takes in a parasiteTree and returns a string with the 
@@ -233,8 +234,8 @@ def Greedy(DTL, ParasiteTree):
                 for i in range(len(currentDTL[key])-1):
                     if currentDTL[key][i][-1] != 0:
                         collected = True
-    except ex.CheetaError:
+    except CheetaError:
         raise
     except Exception as e:
-        raise ex.CheetaError(ex.CheetaErrorEnum.Alg, ["Greedy", e.message])
+        raise CheetaError(CheetaErrorEnum.Alg, ["Greedy", e.message])
     return scores, rec

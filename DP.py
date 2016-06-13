@@ -15,7 +15,8 @@
 # number of reconciliations of the host and parasite trees
 
 from newickFormatReader import newickFormatReader
-import exceptions as ex
+from CheetaExceptions import CheetaError
+from CheetaExceptions import CheetaErrorEnum
 import Greedy
 import copy
 
@@ -402,7 +403,7 @@ def reconcile(fileName, D, T, L):
     try:
         host, paras, phi = newickFormatReader(fileName)
         return DP(host, paras, phi, D, T, L)
-    except ex.CheetaError:
+    except CheetaError:
         raise
     except Exception as e:
-        raise ex.CheetaError(ex.CheetaErrorEnum.Alg, ["DP", e.message])
+        raise CheetaError(CheetaErrorEnum.Alg, ["DP", e.message])

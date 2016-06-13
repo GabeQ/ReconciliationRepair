@@ -18,7 +18,7 @@ import fixer
 import JaneUtil
 import newickToTreeParser as ntp
 import treeToNewickParser as ptn
-import exceptions as ex
+from CheetaExceptions import CheetaError
 import sys
 import os
 
@@ -109,7 +109,7 @@ def main():
         # run Jane with .tree file
         janeOut = JaneUtil.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
         janeCost = JaneUtil.janeCost(janeOut, dVal, tVal, lVal)
-    except ex.CheetaError as e:
+    except CheetaError as e:
         print str(e)
         if e.hasInnerError:
             print >> sys.stderr, e.innerError

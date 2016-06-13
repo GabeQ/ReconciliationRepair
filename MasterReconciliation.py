@@ -16,7 +16,8 @@ from sys import argv
 import ReconciliationGraph
 import copy
 import orderGraph
-import exceptions as ex
+from CheetaExceptions import CheetaError
+from CheetaExceptions import CheetaErrorEnum
 
 
 def Reconcile(argList):
@@ -54,10 +55,10 @@ def Reconcile(argList):
         for rec in recs:
             if orderGraph.date(ReconciliationGraph.buildReconciliation(host, paras, rec)) == False:
                 infeasible_recs.append(rec)
-    except ex.CheetaError:
+    except CheetaError:
         raise
     except Exception as e:
-        raise ex.CheetaError(ex.CheetaErrorEnum.Alg, ["Master Reconciliation", e.message])
+        raise CheetaError(CheetaErrorEnum.Alg, ["Master Reconciliation", e.message])
 
     return infeasible_recs, recs, cost
 
