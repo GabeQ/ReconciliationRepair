@@ -24,6 +24,7 @@ import MasterReconciliation
 import exceptions as ex
 
 
+
 # Global variables (can be customized in the future)
 dVal = 0
 tVal = 0
@@ -261,5 +262,14 @@ def fix(fileName, dup, trans, loss, verbose, limit):
 
     return min_cost, DPCost
     
+    #loops through the first ten reconciliations of infeasible trees
+    for T in recs[0:10]:
+        alpha = recon_tree_to_dtl(T)
+        out(S, G, alpha)
+        alpha, pull_up = temporal_consistency_fixer(G, G_dict, S, S_dict, alpha)
+        cost = out(S, G, alpha)
+        if min_cost is None or cost < min_cost:
+            min_cost = cost
+        #print "number of operations: {0}".format(pull_up)
 
 

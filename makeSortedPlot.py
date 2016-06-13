@@ -22,7 +22,7 @@ import MasterReconciliation
 dVal = 2
 tVal = 3
 lVal = 1
-num = 100
+num = 101
 
 # memoization for jane, optimal, and fixer
 janeMemo = {} 
@@ -37,12 +37,13 @@ def findGroups(fileNum):
 	
         optimal = [] #list of scores where the optimal score is better than Jane
         repair = [] #list of scores where the repair score is better than Jane
-        tie = [] #list of scores where the repair score is the same as Jane's
+        tieRepair = [] #list of scores where the repair score is the same as Jane's
+        tieOptimal = []
         
         scores = []
 	for i in fileNum:
 		index = str(i)
-		for j in xrange(4 - len(str(i + 1))):
+		for j in xrange(4 - len(str(i))):
 			index = "0" + index
 		f = "janeCosts/COG" + index + ".txt"
 		if not os.path.isfile(f):
@@ -90,12 +91,18 @@ def findGroups(fileNum):
 	    if scores[i][2] != None: #if there is an optimal score and a 'None' for the fixer score
 	        if scores[i][2] < scores[i][1]: #if the optimal score is less than the Jane score
 	            optimal.append(scores[i][0])  #append the sample number to the list of 'optimals'
+	        if scores[i][2] == scores[i][1]: #if the optimal score is same as the Jane score
+	            tieOptimal.append(scores[i][0])
 	    elif scores[i][3] != None: #if there is an fixer score and a 'None' for the optimal score
 	        if scores[i][3] < scores[i][1]: 
 	            repair.append(scores[i][0])
-	        if scores[i][3] == scores[i][2]: #if the fixer score and Jane score are the same
-	            tie.append(scores[i][0])
-        return optimal, repair, tie
+	        if scores[i][3] == scores[i][1]: #if the fixer score and Jane score are the same
+	            tieRepair.append(scores[i][0])
+	print optimal
+	print repair
+	print tieRepair
+	print tieOptimal
+        return optimal, repair, tieRepair, tieOptimal
 
 def janeSort(list):
         """takes in a list with  index numbers of samples, 
@@ -105,12 +112,11 @@ def janeSort(list):
         scores = []
 	for i in fileNum:
 		index = str(i)
-		for j in xrange(4 - len(str(i + 1))):
+		for j in xrange(4 - len(str(i))):
 			index = "0" + index
 		f = "janeCosts/COG" + index + ".txt"
 		if not os.path.isfile(f):
 			continue
-
 		if i in janeMemo:
 		    janeScore = janeMemo[i]
 		else:
@@ -135,19 +141,22 @@ def main():
 	optimalX = []
 	optimalList = []
 	fileNum = range(1, num+1)
-	optimal, repair, tie = findGroups(fileNum)
+	optimal, repair, tieRepair, tieOptimal = findGroups(fileNum)
         remaining = []
         for x in range(1, num+1): 
             if x not in optimal:
                 if x not in repair:
-                    if x not in tie:
-                        remaining.append(x)
+                    if x not in tieRepair:
+                        if x not in tieOptimal:
+                            remaining.append(x)
         optimal = janeSort(optimal)
         print optimal
         repair = janeSort(repair)
         print repair
-        tie = janeSort(tie)
-        print tie
+        tieRepair = janeSort(tieRepair)
+        print tieRepair
+        tieOptimal = janeSort(tieOptimal)
+        print tieOptimal
         allElse = janeSort(remaining)
         print allElse
                         
@@ -156,7 +165,9 @@ def main():
             realFileNum.append(i)
         for i in repair:
             realFileNum.append(i)
-        for i in tie:
+        for i in tieRepair:
+            realFileNum.append(i)
+        for i in tieOptimal:
             realFileNum.append(i)
         for i in allElse:
             realFileNum.append(i)
@@ -167,7 +178,7 @@ def main():
 	        janeX.append(count)
 		index = str(i)
 		print "index before: " + index
-		for j in xrange(4 - len(str(i + 1))):
+		for j in xrange(4 - len(str(i))):
 			index = "0" + index
 		f = "janeCosts/COG" + index + ".txt"
 		if not os.path.isfile(f):
@@ -217,11 +228,11 @@ def main():
           		fixerFile.close()
           		print "Done ", index	    
         fig, ax = plt.subplots()
-        ax.set_xticks([16, 27, 100]) #ticks for the x axis
+        ax.set_xticks([16, 27, 28, 36, 100]) #ticks for the x axis
 	ax.plot(janeX, janeList, 'ro', label='Jane')
 	ax.plot(fixerX, fixerList, 'b*', label='Repair')
 	ax.plot(optimalX, optimalList, 'y^', label='No Repair')
-	plt.xlabel('G File', fontsize=21)
+	plt.xlabel('COG File', fontsize=21)
 	plt.ylabel('Cost', fontsize=21)
 	plt.legend()
 	plt.grid()
