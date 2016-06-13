@@ -17,15 +17,11 @@ from cStringIO import StringIO
 # BioPython libraries
 from Bio import Phylo
 
-import DP
-import pickle
-import networkx as nx
-from ete2 import Tree
-import newickFormatReader
+from ete3 import Tree
+from newickFormatReader import newickFormatReader
 from ReconciliationGraph import buildReconciliation
 import MasterReconciliation
-import os.path
-import os
+import exceptions as ex
 
 
 # Global variables (can be customized in the future)
@@ -235,26 +231,34 @@ def fix(fileName, dup, trans, loss, limit):
 
     #print fileName
 
-    S_dict, G_dict, _ = newickFormatReader.getInput(fileName)
-    S, G = eteTreeReader(fileName)
-    recs, allRecs = MasterReconciliation.Reconcile(["", fileName, str(dVal), str(tVal), str(lVal), "unit", 0, 1, 0, 1])
-    totRecs = len(allRecs)
+    try:
+        S_dict, G_dict, _ = newickFormatReader(fileName)
+        S, G = eteTreeReader(fileName)
+        recs, allRecs, DPCost = MasterReconciliation.Reconcile(["", fileName, str(dVal), str(tVal), str(lVal), "unit", 0, 1, 0, 1])
+        totRecs = len(allRecs)
 
-    #print "# of Reconciliations: {0}".format(totRecs)
-    #print "# of Infeasible Reconciliations: {0}".format(len(recs))
+        #print "# of Reconciliations: {0}".format(totRecs)
+        #print "# of Infeasible Reconciliations: {0}".format(len(recs))
 
-    min_cost = None
+        min_cost = None
+
+        if limit == None:
+            limit = len(recs)
+
+        for T in recs[0:limit]:
+            alpha = recon_tree_to_dtl(T)
+            out(S, G, alpha)
+            alpha, pull_up = temporal_consistency_fixer(G, G_dict, S, S_dict, alpha)
+            cost = out(S, G, alpha)
+            if min_cost is None or cost < min_cost:
+                min_cost = cost
+            #print "number of operations: {0}".format(pull_up)
+    except ex.CheetaError:
+        raise
+    except Exception as e:
+        raise ex.CheetaError(ex.CheetaErrorEnum.Alg, ["Fixer", e.message])
+
+    return min_cost, DPCost
     
-    if limit == None:
-        limit = len(recs)
 
-    for T in recs[0:limit]:
-        alpha = recon_tree_to_dtl(T)
-        out(S, G, alpha)
-        alpha, pull_up = temporal_consistency_fixer(G, G_dict, S, S_dict, alpha)
-        cost = out(S, G, alpha)
-        if min_cost is None or cost < min_cost:
-            min_cost = cost
-        #print "number of operations: {0}".format(pull_up)
 
-    return min_cost

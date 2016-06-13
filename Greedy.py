@@ -7,6 +7,8 @@
 # vertex-based DP algorithm. The main function in this file is called Greedy
 # and the remaining functions are helper functions that are used by Greedy.
 
+import exceptions as ex
+
 def findRoot(Tree):
     """This function takes in a parasiteTree and returns a string with the 
     name of the root vertex of the tree"""
@@ -217,18 +219,22 @@ def Greedy(DTL, ParasiteTree):
     counter = 0
     rec = [] #list of reconciliations
     collected = True
-    while collected:
-        #call greedyOnce if all the points have not been collected yet
-        oneTree, currentDTL, score = greedyOnce(currentDTL, ParasiteTree)
-        scores.append(score) 
-        rec.append(oneTree)
-        collected = False #set not0 to False
-        zeroes = 0
-        events = 0
-        #iterate to see if more points need to be collected
-        for key in currentDTL:
-            for i in range(len(currentDTL[key])-1):
-                if currentDTL[key][i][-1] != 0:
-                    collected = True
-
+    try:
+        while collected:
+            #call greedyOnce if all the points have not been collected yet
+            oneTree, currentDTL, score = greedyOnce(currentDTL, ParasiteTree)
+            scores.append(score)
+            rec.append(oneTree)
+            collected = False #set not0 to False
+            zeroes = 0
+            events = 0
+            #iterate to see if more points need to be collected
+            for key in currentDTL:
+                for i in range(len(currentDTL[key])-1):
+                    if currentDTL[key][i][-1] != 0:
+                        collected = True
+    except ex.CheetaError:
+        raise
+    except Exception as e:
+        raise ex.CheetaError(ex.CheetaErrorEnum.Alg, ["Greedy", e.message])
     return scores, rec

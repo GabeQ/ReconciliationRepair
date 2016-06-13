@@ -16,7 +16,6 @@
 
 import fixer
 import JaneUtil
-import MasterReconciliation
 import newickToTreeParser as ntp
 import treeToNewickParser as ptn
 import exceptions as ex
@@ -90,20 +89,8 @@ def main():
     newickFile = None
     treeFile = None
     tempFileToRemove = None
-    
-    # file converter
-    if '.tree' in fileName:
-        treeFile = fileName
-        newickFile = ptn.treeToNewickParser(fileName)
-        tempFileToRemove = newickFile
-    elif '.newick' in fileName or '.nwk' in fileName:
-        newickFile = fileName
-        treeFile = ntp.newickToTreeParser(fileName)
-        tempFileToRemove = treeFile
-    else:
-        print "The file must be in either '.tree' or '.newick' format"
-        exit(1)
 
+<<<<<<< HEAD
     # test if the DP is temporally consistent and get DP Cost
     recs, allRecs, DPCost = MasterReconciliation.Reconcile(["", newickFile, dVal, tVal, lVal, "unit", 0, 1, 0, 1])
     
@@ -111,10 +98,36 @@ def main():
         fixerCost = float('inf')
     else:
         fixerCost = fixer.fix(newickFile, dVal, tVal, lVal, limit) # run fixer.py with .newick file
+=======
+    try:
+        # file converter
+        if '.tree' in fileName:
+            treeFile = fileName
+            newickFile = ptn.treeToNewickParser(fileName)
+            tempFileToRemove = newickFile
+        elif '.newick' in fileName or '.nwk' in fileName:
+            newickFile = fileName
+            treeFile = ntp.newickToTreeParser(fileName)
+            tempFileToRemove = treeFile
+        else:
+            print "The file must be in either '.tree' or '.newick' format"
+            sys.exit(1)
 
-    # run Jane with .tree file
-    janeOut = JaneUtil.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
-    janeCost = JaneUtil.janeCost(janeOut, dVal, tVal, lVal)
+        fixerCost, DPCost = fixer.fix(newickFile, dVal, tVal, lVal) # run fixer.py with .newick file
+>>>>>>> origin/master
+
+        # run Jane with .tree file
+        janeOut = JaneUtil.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
+        janeCost = JaneUtil.janeCost(janeOut, dVal, tVal, lVal)
+    except ex.CheetaError as e:
+        print str(e)
+        if e.hasInnerError:
+            print >> sys.stderr, e.innerError
+        return
+    except Exception as e:
+        print "Unknown error has occurred"
+        print >> sys.stderr, e.message
+        return
 
     # compare fixer score with Jane score
     if DPCost == janeCost:  # Jane's solution is optimal
