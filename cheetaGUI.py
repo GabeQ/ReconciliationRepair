@@ -22,11 +22,14 @@
 #base.config(menu = menubar)
 #base.mainloop()
 
+from Tkinter import *
 import Tkinter as tk
+#import tkMessageBox
 
 class MainWindow(tk.Frame):
     counter = 0
     def __init__(self, *args, **kwargs):
+        
         tk.Frame.__init__(self, *args, **kwargs)
         self.button = tk.Button(self, text="Create new window", 
                                 command=self.create_window)
@@ -38,9 +41,32 @@ class MainWindow(tk.Frame):
         t.wm_title("Window #%s" % self.counter)
         l = tk.Label(t, text="This is window #%s" % self.counter)
         l.pack(side="top", fill="both", expand=True, padx=100, pady=100)
+        
+class Application(tk.Frame):
+    def __init__(self, master=None):
+        tk.Frame.__init__(self, master)
+        self.pack()
+        self.createWidgets()
+
+    def createWidgets(self):
+        self.hi_there = tk.Button(self)
+        self.hi_there["text"] = "Hello\n(click me)"
+        self.hi_there["command"] = self.say_hi
+        self.hi_there.pack(side="top")
+
+        self.QUIT = tk.Button(self, text="Quit", fg="red",
+                              command=root.destroy)
+        self.QUIT.pack(side="bottom")
+
+    def say_hi(self):
+        print("hi there, everyone!")
+    
 
 if __name__ == "__main__":
     root = tk.Tk()
     main = MainWindow(root)
+  #  main.title("Cheeta")
+ #   main.geometry('800x600+300+300')
     main.pack(side="top", fill="both", expand=True)
+    main = Application(master=root)
     root.mainloop()
