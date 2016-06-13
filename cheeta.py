@@ -71,9 +71,8 @@ def readArgs():
             else:
                 print 'Command not recognized'
                 usage()
-    print i
-    print sys.argv[i]
-    if '.tree' not in sys.argv[i] or '.newick' not in sys.argv[i]:
+
+    if '.tree' not in sys.argv[i] and '.newick' not in sys.argv[i]:
         print 'No filename ending in .tree or .newick provided'
         usage()
     else:
@@ -87,12 +86,7 @@ def main():
     
     readArgs()
     # arguments to be provided in the command line
-    fileName = sys.argv[1]
-    dVal = int(sys.argv[2])
-    tVal = int(sys.argv[3])
-    lVal = int(sys.argv[4])
-    popSize = int(sys.argv[5])
-    numGen = int(sys.argv[6])
+    
     newickFile = None
     treeFile = None
     tempFileToRemove = None
@@ -116,7 +110,7 @@ def main():
     if len(recs) == 0:  # no infeasible reconciliations found --> no need for fixer algorithm
         fixerCost = float('inf')
     else:
-        fixerCost = fixer.fix(newickFile, dVal, tVal, lVal) # run fixer.py with .newick file
+        fixerCost = fixer.fix(newickFile, dVal, tVal, lVal, limit) # run fixer.py with .newick file
 
     # run Jane with .tree file
     janeOut = JaneUtil.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
