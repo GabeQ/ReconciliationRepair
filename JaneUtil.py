@@ -5,8 +5,8 @@ def runJane(fileName, popSize, numGen, dVal, tVal, lVal):
     '''runs Jane in the command line, saves the output in a file, and returns the file name'''
     tempOut = tempfile.NamedTemporaryFile(delete=False)
     tempOut.close()
-    os.system("./Jane/jane-cli.sh -C -p " + str(popSize) + " -i " + str(numGen) + \
-              " -c 0 " + str(dVal) + " " + str(tVal) + " " + str(lVal) + " 0 " + \
+    os.system("./Jane/jane-cli.sh -C -p " + str(popSize) + " -i " + str(numGen) +
+              " -c 0 " + str(dVal) + " " + str(tVal) + " " + str(lVal) + " 0 " +
               str(fileName) + " >> " + tempOut.name) 
     return tempOut.name
 

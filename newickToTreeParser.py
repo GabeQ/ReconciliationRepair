@@ -36,58 +36,64 @@
 
 # python libraries
 import tempfile
-import newickFormatReader
+from newickFormatReader import newickFormatReader
 from ReconciliationGraph import treeFormat
+import exceptions as ex
 
 
 #Changed to take in a newick file rather than be a main function
 def newickToTreeParser(newickFile):	
 
-    outFile = tempfile.NamedTemporaryFile(delete=False)
+    try:
+        outFile = tempfile.NamedTemporaryFile(delete=False)
 
-    host, parasite, phi = newickFormatReader.getInput(newickFile)
-    H = treeFormat(host)
-    P = treeFormat(parasite)
-    
-    H_dict = {}   # name:index
-    P_dict = {}   # name:index
+        host, parasite, phi = newickFormatReader(newickFile)
+        H = treeFormat(host)
+        P = treeFormat(parasite)
 
-    count = 0
-    for key in H:
-        count += 1
-        H_dict[key] = count
+        H_dict = {}   # name:index
+        P_dict = {}   # name:index
 
-    for key in P:
-        count += 1
-        P_dict[key] = count
+        count = 0
+        for key in H:
+            count += 1
+            H_dict[key] = count
 
-    outFile.write("HOSTTREE\n")
-    for key in H:
-        outFile.write(str(H_dict[key]) + "\t")
-        if H[key] == [None, None]:
-            outFile.write("null\tnull\n")
-        else:
-            outFile.write(str(H_dict[H[key][0]]) + "\t" + str(H_dict[H[key][1]]) + "\n")
+        for key in P:
+            count += 1
+            P_dict[key] = count
 
-    outFile.write("\nHOSTNAMES\n")
-    for key in H:
-        outFile.write(str(H_dict[key]) + "\t" + key + "\n")
+        outFile.write("HOSTTREE\n")
+        for key in H:
+            outFile.write(str(H_dict[key]) + "\t")
+            if H[key] == [None, None]:
+                outFile.write("null\tnull\n")
+            else:
+                outFile.write(str(H_dict[H[key][0]]) + "\t" + str(H_dict[H[key][1]]) + "\n")
 
-    outFile.write("\nPARASITETREE\n")	
-    for key in P:
-        outFile.write(str(P_dict[key]) + "\t")
-        if P[key] == [None, None]:
-            outFile.write("null\tnull\n")
-        else:
-            outFile.write(str(P_dict[P[key][0]]) + "\t" + str(P_dict[P[key][1]]) + "\n")
+        outFile.write("\nHOSTNAMES\n")
+        for key in H:
+            outFile.write(str(H_dict[key]) + "\t" + key + "\n")
 
-    outFile.write("\nPARASITENAMES\n")
-    for key in P:
-        outFile.write(str(P_dict[key]) + "\t" + key + "\n")
+        outFile.write("\nPARASITETREE\n")
+        for key in P:
+            outFile.write(str(P_dict[key]) + "\t")
+            if P[key] == [None, None]:
+                outFile.write("null\tnull\n")
+            else:
+                outFile.write(str(P_dict[P[key][0]]) + "\t" + str(P_dict[P[key][1]]) + "\n")
 
-    outFile.write("\nPHI\n")
-    for key in phi:
-        outFile.write(str(H_dict[phi[key]]) + "\t" + str(P_dict[key]) + "\n")
+        outFile.write("\nPARASITENAMES\n")
+        for key in P:
+            outFile.write(str(P_dict[key]) + "\t" + key + "\n")
 
-    outFile.close()
-    return outFile.name
+        outFile.write("\nPHI\n")
+        for key in phi:
+            outFile.write(str(H_dict[phi[key]]) + "\t" + str(P_dict[key]) + "\n")
+
+        outFile.close()
+        return outFile.name
+    except ex.FileParseError:
+        raise
+    except:
+        raise ex.FileParseError(newickFile, "Could not parse file - Check to see file formatting is correct")
