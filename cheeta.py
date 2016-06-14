@@ -83,11 +83,15 @@ def readArgs():
                 print 'Command not recognized'
                 usage()
 
-    if '.tree' not in sys.argv[i] and '.newick' not in sys.argv[i]:
-        print 'No filename ending in .tree or .newick provided'
+    try:
+        if '.tree' not in sys.argv[i] and '.newick' not in sys.argv[i]:
+            print 'No filename ending in .tree or .newick provided'
+            usage()
+        else:
+            fileName = sys.argv[i]
+    except:
+        print 'Index does not hit the filename'
         usage()
-    else:
-        fileName = sys.argv[i]
             
                 
         
