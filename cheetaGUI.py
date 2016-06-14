@@ -25,18 +25,10 @@
 from Tkinter import *
 import Tkinter as tk
 from tkFileDialog   import askopenfilename
-fields = 'fileName','dVal','tVal' 'lVal','popSize','numGen','verbose','limit'
+fields = 'fileName','dVal','tVal','lVal','popSize','numGen','verbose','limit'
 
 class MainWindow(tk.Frame):
     counter = 0
-    
-    def __init__(self, *args, **kwargs):
-        
-        tk.Frame.__init__(self, *args, **kwargs)
-        self.button = tk.Button(self, text="Create new window", 
-                                command=self.createWindow)
-        self.button.pack(side="top")
-
     def createWindow(self):
         self.counter += 1
         t = tk.Toplevel(self)
@@ -94,7 +86,6 @@ def makeform(root, fields):
       ent.pack(side=RIGHT, expand=YES, fill=X)
       entries.append((field, ent))
    return entries
-
 
 if __name__ == "__main__":
     def OpenFile():
