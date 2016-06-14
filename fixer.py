@@ -8,20 +8,13 @@
 # outputs into corresponding .txt files in the fixerOut folder.
 #
 # Run with
-#   python fixer.py
-
-
-# python libraries
-from cStringIO import StringIO
-
-# BioPython libraries
-from Bio import Phylo
+# python fixer.py
 
 from ete3 import Tree
 from newickFormatReader import newickFormatReader
 from ReconciliationGraph import buildReconciliation
 import MasterReconciliation
-import exceptions as ex
+from CheetaExceptions import CheetaError, CheetaErrorEnum
 
 
 
@@ -255,10 +248,10 @@ def fix(fileName, dup, trans, loss, verbose, limit):
                 min_cost = cost
             if verbose == True:
                 print "number of operations: {0}".format(pull_up)
-    except ex.CheetaError:
+    except CheetaError:
         raise
     except Exception as e:
-        raise ex.CheetaError(ex.CheetaErrorEnum.Alg, ["Fixer", e.message])
+        raise CheetaError(CheetaErrorEnum.Alg, ["Fixer", e.message])
 
     return min_cost, DPCost
     
