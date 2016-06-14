@@ -22,44 +22,41 @@
 #base.config(menu = menubar)
 #base.mainloop()
 
-from Tkinter import Tk, Frame, Menu
+from Tkinter import *
 import Tkinter as tk
 from tkFileDialog   import askopenfilename
-#import tkMessageBox
+fields = 'fileName','dVal','tVal' 'lVal','popSize','numGen','verbose','limit'
 
 class MainWindow(tk.Frame):
     counter = 0
+    
     def __init__(self, *args, **kwargs):
+        
         tk.Frame.__init__(self, *args, **kwargs)
         self.button = tk.Button(self, text="Create new window", 
-                                command=self.create_window)
+                                command=self.createWindow)
         self.button.pack(side="top")
 
-    def create_window(self):
+    def createWindow(self):
         self.counter += 1
         t = tk.Toplevel(self)
         t.wm_title("Window #%s" % self.counter)
         l = tk.Label(t, text="This is window #%s" % self.counter)
         l.pack(side="top", fill="both", expand=True, padx=100, pady=100)
+    
+    def initialize(self):
+        pass
         
 class Application(tk.Frame):
-    def __init__(self, master=None):
-        tk.Frame.__init__(self, master)
+    def __init__(self, root=None):
+        tk.Frame.__init__(self, root)
         self.pack()
         self.createWidgets()
-
+        
     def createWidgets(self):
-        self.hi_there = tk.Button(self)
-        self.hi_there["text"] = "Hello\n(click me)"
-        self.hi_there["command"] = self.say_hi
-        self.hi_there.pack(side="top")
-        self.QUIT = tk.Button(self, text="Quit", fg="red",
-                              command=root.destroy)
+        self.QUIT = tk.Button(self, text="Quit", fg="red", command=root.destroy)
         self.QUIT.pack(side="bottom")
 
-    def say_hi(self):
-        print("hi there, everyone!")
-        
 class makeMenu(Frame):
     def __init__(self, parent):
         Frame.__init__(self, parent)   
@@ -70,28 +67,49 @@ class makeMenu(Frame):
         self.parent.title("Simple menu")
         menubar = Menu(self.parent)
         self.parent.config(menu=menubar)
-        
         fileMenu = Menu(menubar)
         fileMenu.add_command(label="Open file", command=OpenFile)
         fileMenu.add_command(label="Exit", command=self.onExit)
         menubar.add_cascade(label="File", menu=fileMenu)
-        
         helpmenu = Menu(menu)
         menu.add_cascade(label="Help", menu=helpmenu)
 
     def onExit(self):
         self.quit()
 
+def fetch(entries):
+   for entry in entries:
+      field = entry[0]
+      text  = entry[1].get()
+      print('%s: "%s"' % (field, text)) 
+
+def makeform(root, fields):
+   entries = []
+   for field in fields:
+      row = Frame(root)
+      lab = Label(row, width=15, text=field, anchor='w')
+      ent = Entry(row)
+      row.pack(side=TOP, fill=X, padx=5, pady=5)
+      lab.pack(side=LEFT)
+      ent.pack(side=RIGHT, expand=YES, fill=X)
+      entries.append((field, ent))
+   return entries
+
+
 if __name__ == "__main__":
     def OpenFile():
         name = askopenfilename()
         print name
     root = tk.Tk()
+    ents = makeform(root, fields)
+    root.bind('<Return>', (lambda event, e=ents: fetch(e)))   
+    b1 = Button(root, text='Show', command=(lambda e=ents: fetch(e)))
+    b1.pack(side=LEFT, padx=5, pady=5)
     menu = Menu(root)
     main = MainWindow(root)
- #   main.title("Cheeta")
+  #  main.title("Cheeta")
     main.pack(side="top", fill="both", expand=True)
-    main = Application(master=root)
-    root.geometry('800x700+300+300')
+    main = Application(root)
+    root.geometry('1000x900+300+300')
     app = makeMenu(root)
     root.mainloop()
