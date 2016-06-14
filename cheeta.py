@@ -9,10 +9,10 @@
 # and stores it as both a .newick and .tree file (since Jane takes in .tree
 # files and the DP and fixer take in .newick files). It runs both fixer.py
 # and Jane in order to compute the minimum cost to construct a reconciliation of
-# a host and parasite tree (aka the most parsemonious solution). It then compares the two and uses the scores
-# to tell the user whether Jane has the most parsemonious solution (optimal score and Jane score are the same), 
-# whether there could be a better solution, 
-# or whether there may be a better solution with larger input values for Jane.
+# a host and parasite tree (aka the most parsemonious solution). It then compares 
+# the two and uses the scores to tell the user whether Jane has the most parsemonious 
+# solution (optimal score and Jane score are the same), whether there could be a better 
+# solution, or whether there may be a better solution with larger input values for Jane.
 
 import fixer
 import JaneUtil
@@ -90,7 +90,7 @@ def readArgs():
         else:
             fileName = sys.argv[i]
     except:
-        print 'Index does not hit the filename'
+        print 'Missing filename at the end of the command line'
         usage()
             
                 

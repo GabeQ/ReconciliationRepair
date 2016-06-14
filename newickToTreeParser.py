@@ -38,7 +38,7 @@
 import tempfile
 from newickFormatReader import newickFormatReader
 from ReconciliationGraph import treeFormat
-import exceptions as ex
+from CheetaExceptions import FileParseError
 
 
 #Changed to take in a newick file rather than be a main function
@@ -93,7 +93,7 @@ def newickToTreeParser(newickFile):
 
         outFile.close()
         return outFile.name
-    except ex.FileParseError:
+    except FileParseError:
         raise
     except:
-        raise ex.FileParseError(newickFile, "Could not parse file - Check to see file formatting is correct")
+        raise FileParseError(newickFile, "Could not parse file - Check to see file formatting is correct")

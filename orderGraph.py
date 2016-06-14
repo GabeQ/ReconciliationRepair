@@ -1,4 +1,3 @@
-import copy
 def date(recon):
 	"""takes a Tree and returns a dictionary representation of the ordering of the tree"""
 	order = {}
