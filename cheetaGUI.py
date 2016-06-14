@@ -24,12 +24,12 @@
 
 from Tkinter import Tk, Frame, Menu
 import Tkinter as tk
+from tkFileDialog   import askopenfilename
 #import tkMessageBox
 
 class MainWindow(tk.Frame):
     counter = 0
     def __init__(self, *args, **kwargs):
-        
         tk.Frame.__init__(self, *args, **kwargs)
         self.button = tk.Button(self, text="Create new window", 
                                 command=self.create_window)
@@ -53,7 +53,6 @@ class Application(tk.Frame):
         self.hi_there["text"] = "Hello\n(click me)"
         self.hi_there["command"] = self.say_hi
         self.hi_there.pack(side="top")
-
         self.QUIT = tk.Button(self, text="Quit", fg="red",
                               command=root.destroy)
         self.QUIT.pack(side="bottom")
@@ -62,37 +61,37 @@ class Application(tk.Frame):
         print("hi there, everyone!")
         
 class makeMenu(Frame):
-  
     def __init__(self, parent):
         Frame.__init__(self, parent)   
-         
         self.parent = parent        
         self.initUI()
         
-        
     def initUI(self):
-      
         self.parent.title("Simple menu")
-        
         menubar = Menu(self.parent)
         self.parent.config(menu=menubar)
         
         fileMenu = Menu(menubar)
-        fileMenu.add_command(label="Upload file", command=self.onExit)
+        fileMenu.add_command(label="Open file", command=OpenFile)
         fileMenu.add_command(label="Exit", command=self.onExit)
         menubar.add_cascade(label="File", menu=fileMenu)
         
+        helpmenu = Menu(menu)
+        menu.add_cascade(label="Help", menu=helpmenu)
 
     def onExit(self):
         self.quit()
-    
 
 if __name__ == "__main__":
+    def OpenFile():
+        name = askopenfilename()
+        print name
     root = tk.Tk()
+    menu = Menu(root)
     main = MainWindow(root)
  #   main.title("Cheeta")
     main.pack(side="top", fill="both", expand=True)
     main = Application(master=root)
-    root.geometry('800x600+300+300')
+    root.geometry('800x700+300+300')
     app = makeMenu(root)
     root.mainloop()
