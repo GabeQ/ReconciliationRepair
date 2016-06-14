@@ -49,6 +49,8 @@ def readArgs():
     global fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit
     
     i = 1
+    if len(sys.argv) == 1:
+        usage()
     if sys.argv[i] == '-h' or sys.argv[i] == '-help' or sys.argv[i] == '--h' or sys.argv[i] == '--help' or sys.argv[i] == '-?':
         help()
 
