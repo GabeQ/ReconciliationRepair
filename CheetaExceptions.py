@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 class CheetaErrorEnum(Enum):
     JaneCLI = 0
     FileParse = 1
