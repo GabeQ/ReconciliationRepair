@@ -56,18 +56,18 @@ def readArgs():
 
     try:
         while i < len(sys.argv) - 1:
-            if sys.argv[i] == '-v':
+            if sys.argv[i] == '-v' or sys.argv[i] == '-V':
                 verbose = True
                 i += 1
-            elif sys.argv[i] == '-l':
+            elif sys.argv[i] == '-l' or sys.argv[i] == '-L':
                 limit = int(sys.argv[i+1])
                 i += 2
-            elif sys.argv[i] == '-c':
+            elif sys.argv[i] == '-c' or sys.argv[i] == '-C':
                 dVal = int(sys.argv[i+1])
                 tVal = int(sys.argv[i+2])
                 lVal = int(sys.argv[i+3])
                 i += 4
-            elif sys.argv[i] == '-p':
+            elif sys.argv[i] == '-p' or sys.argv[i] == '-P':
                 popSize = int(sys.argv[i+1])
                 numGen = int(sys.argv[i+2])
                 i += 3
