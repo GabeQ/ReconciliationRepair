@@ -233,7 +233,7 @@ def fix(fileName, dup, trans, loss, verb, limit):
         totRecs = len(allRecs)
         
         if verbose:
-            print fileName
+            print "Fixer Output"
             print "# of Reconciliations: {0}".format(totRecs)
             print "# of Infeasible Reconciliations: {0}".format(len(recs))
 
