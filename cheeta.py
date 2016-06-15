@@ -115,7 +115,8 @@ def main():
             sys.exit(1)
 
         fixerCost, DPCost = fixer.fix(newickFile, dVal, tVal, lVal, verbose, limit) # run fixer.py with .newick file
-
+        DPCost = int(DPCost)
+        
         # run Jane with .tree file
         janeOut = JaneUtil.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
         janeCost = JaneUtil.janeCost(janeOut, dVal, tVal, lVal)
