@@ -18,24 +18,27 @@
 #
 #
 #
-#
 #base.config(menu = menubar)
 #base.mainloop()
 
 from Tkinter import *
 import Tkinter as tk
 from tkFileDialog   import askopenfilename
+import cheeta
+
+
+fileName = None
+dVal = 2
+tVal = 3
+lVal = 1
+popSize = 30
+numGen = 30
+verbose = False
+limit = None
+
 fields = 'fileName','dVal','tVal','lVal','popSize','numGen','verbose','limit'
 
 class MainWindow(tk.Frame):
-    counter = 0
-    def createWindow(self):
-        self.counter += 1
-        t = tk.Toplevel(self)
-        t.wm_title("Window #%s" % self.counter)
-        l = tk.Label(t, text="This is window #%s" % self.counter)
-        l.pack(side="top", fill="both", expand=True, padx=100, pady=100)
-    
     def initialize(self):
         pass
         
@@ -80,22 +83,48 @@ def makeform(root, fields):
    for field in fields:
       row = Frame(root)
       lab = Label(row, width=15, text=field, anchor='w')
-      ent = Entry(row)
+      inputGiven = Entry(row)
       row.pack(side=TOP, fill=X, padx=5, pady=5)
       lab.pack(side=LEFT)
       ent.pack(side=RIGHT, expand=YES, fill=X)
-      entries.append((field, ent))
+      entries.append((field, inputGiven))
    return entries
+   
+def retrieve_input(entries):
+    global dVal, tVal, lVal, popSize, numGen, verbose, limit
+    for i in entries:
+        if i[0] == 'dVal':
+            dVal = i[1]
+        elif i[0] == 'tVal':
+            tVal = i[1]
+        elif i[0] == 'lVal':
+            lVal = i[1]
+        elif i[0] == 'popSize':
+            popSize = i[1]
+        elif i[0] == 'numGen':
+            numGen = i[1]
+        elif i[0] == 'verbose':
+            verbose = i[1]
+        elif i[0] == 'limit':
+            popSize = i[1]
+    return dVal, tVal, lVal, popSize, numGen, verbose, limit
+   
+def callCheeta(dVal, tVal, lVal, popSize, numGen, verbose, limit):
+    #call Cheeta here
+    print "implementing Cheeta"
 
 if __name__ == "__main__":
     def OpenFile():
         name = askopenfilename()
         print name
     root = tk.Tk()
-    ents = makeform(root, fields)
+    inputs = makeform(root, fields)
+    dVal, tVal, lVal, popSize, numGen, verbose, limit = retrieve_input(inputs)
     root.bind('<Return>', (lambda event, e=ents: fetch(e)))   
     b1 = Button(root, text='Show', command=(lambda e=ents: fetch(e)))
     b1.pack(side=LEFT, padx=5, pady=5)
+    b = Button(root, text="Run!", command=callCheeta(dVal, tVal, lVal, popSize, numGen, verbose, limit))
+    b.pack()
     menu = Menu(root)
     main = MainWindow(root)
   #  main.title("Cheeta")
