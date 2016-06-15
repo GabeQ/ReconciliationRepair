@@ -95,11 +95,11 @@ def treeToNewickParser(treeFile):
         f.close()
     except (OSError, IOError) as e:
         if e.errno == errno.ENOENT:
-            raise CheetaError(CheetaErrorEnum.FileParse, [treeFile, "File access error - File does not exist"])
+            raise CheetaError(CheetaErrorEnum.FileParse, treeFile, "File access error - File does not exist")
         elif e.errno == errno.EACCES:
-            raise CheetaError(CheetaErrorEnum.FileParse, [treeFile, "File access error - Access denied"])
+            raise CheetaError(CheetaErrorEnum.FileParse, treeFile, "File access error - Access denied")
         else:
-            raise CheetaError(CheetaErrorEnum.FileParse, [treeFile, "Could not access file"])
+            raise CheetaError(CheetaErrorEnum.FileParse, treeFile, "Could not access file")
 
     try:
         index = 1
@@ -133,7 +133,7 @@ def treeToNewickParser(treeFile):
         temp.close()
         return temp.name
     except FileFormatError as e:
-        raise CheetaError(CheetaErrorEnum.FileParse, [treeFile, "File format error - " + e.message])
+        raise CheetaError(CheetaErrorEnum.FileParse, treeFile, "File format error - " + e.message)
     except:
         raise CheetaError(CheetaErrorEnum.FileParse,
-                             [treeFile, "Could not parse file - Check to see file formatting is correct"])
+                             treeFile, "Could not parse file - Check to see file formatting is correct")

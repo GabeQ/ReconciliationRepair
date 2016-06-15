@@ -98,4 +98,4 @@ def newickToTreeParser(newickFile):
         raise
     except:
         raise CheetaError(CheetaErrorEnum.FileParse,
-                          [newickFile, "Could not parse file - Check to see file formatting is correct"])
+                          newickFile, "Could not parse file - Check to see file formatting is correct")

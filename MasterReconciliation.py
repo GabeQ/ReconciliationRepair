@@ -12,7 +12,7 @@
 import DP
 import Greedy
 from newickFormatReader import newickFormatReader
-from sys import argv
+import sys
 import ReconciliationGraph
 import copy
 import orderGraph
@@ -57,8 +57,8 @@ def Reconcile(argList):
                 infeasible_recs.append(rec)
     except CheetaError:
         raise
-    except Exception as e:
-        raise CheetaError(CheetaErrorEnum.Alg, ["Master Reconciliation", e.message])
+    except:
+        raise CheetaError(CheetaErrorEnum.Alg), None, sys.exc_info()[2]
 
     return infeasible_recs, recs, cost
 
@@ -80,7 +80,7 @@ def unitScoreDTL(hostTree, parasiteTree, phi, D, T, L):
 
 
 def main():
-    Reconcile(argv)
+    Reconcile(sys.argv)
 
 
 if __name__ == "__main__":

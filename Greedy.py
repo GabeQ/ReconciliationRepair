@@ -9,6 +9,7 @@
 
 from CheetaExceptions import CheetaError
 from CheetaExceptions import CheetaErrorEnum
+import sys
 
 def findRoot(Tree):
     """This function takes in a parasiteTree and returns a string with the 
@@ -236,6 +237,6 @@ def Greedy(DTL, ParasiteTree):
                         collected = True
     except CheetaError:
         raise
-    except Exception as e:
-        raise CheetaError(CheetaErrorEnum.Alg, ["Greedy", e.message])
+    except:
+        raise CheetaError(CheetaErrorEnum.Alg), None, sys.exc_info()[2]
     return scores, rec
