@@ -49,13 +49,13 @@ def newickFormatReader(fileName):
         return hostDict, parasiteDict, phiDict
     except (OSError, IOError) as e:
         if e.errno == errno.ENOENT:
-            raise CheetaError(CheetaErrorEnum.FileParse, [fileName, "File access error - File does not exist"])
+            raise CheetaError(CheetaErrorEnum.FileParse, fileName, "File access error - File does not exist")
         elif e.errno == errno.EACCES:
-            raise CheetaError(CheetaErrorEnum.FileParse, [fileName, "File access error - Access denied"])
+            raise CheetaError(CheetaErrorEnum.FileParse, fileName, "File access error - Access denied")
         else:
-            raise CheetaError(CheetaErrorEnum.FileParse, [fileName, "Could not access file"])
+            raise CheetaError(CheetaErrorEnum.FileParse, fileName, "Could not access file")
     except:
-        raise CheetaError(CheetaErrorEnum.FileParse, [fileName, "Unable to parse file"])
+        raise CheetaError(CheetaErrorEnum.FileParse, fileName, "Unable to parse file")
 
 def parseNewick(newickString, treeType):
     """ Queries the user for a newick file name and returns the contents

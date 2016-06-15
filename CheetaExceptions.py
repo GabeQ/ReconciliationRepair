@@ -8,14 +8,14 @@ class CheetaErrorEnum(Enum):
 
 
 class CheetaError(Exception):
-    def __init__(self, errNum, args):
+    def __init__(self, errNum, *args):
         self.errNum = errNum
         self.hasInnerError = False
 
         # no args
         if errNum == CheetaErrorEnum.JaneCLI:
             self.message = "Not able to execute Jane from the command line. Make sure that Jane is " + \
-                           "in the present working directory"
+                           "located in the parent directory"
         # args: fileName, message
         elif errNum == CheetaErrorEnum.FileParse:
             fileName = args[0]
@@ -25,14 +25,12 @@ class CheetaError(Exception):
         # args: algName, inner error
         elif errNum == CheetaErrorEnum.Alg:
             self.hasInnerError = True
-            self.innerError = "Failure in " + args[0] + ": \n" + args[1]
-            self.message = "Failure in one of the underlying algorithms. See stderr for more info"
+            self.message = "Failure in one of the underlying algorithms. See error logs for more info"
         # unknown or system errors
         # args: inner error
         else:
             self.hasInnerError = True
-            self.innerError = args[0]
-            self.message = "Failure to run Cheeta. See stderr for more info"
+            self.message = "Failure to run Cheeta. See error logs for more info"
 
     def __str__(self):
         return self.message

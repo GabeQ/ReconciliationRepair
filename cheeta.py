@@ -16,9 +16,11 @@
 
 import fixer
 import JaneUtil
+import logging
 import newickToTreeParser as ntp
 import treeToNewickParser as ptn
 from CheetaExceptions import CheetaError
+import datetime
 import sys
 import os
 
@@ -100,6 +102,8 @@ def main():
     treeFile = None
     tempFileToRemove = None
 
+    logging.basicConfig(filename='CheetaError.log', level=logging.ERROR)
+
     try:
         # file converter
         if fileName.endswith('.tree'):
@@ -111,7 +115,7 @@ def main():
             treeFile = ntp.newickToTreeParser(fileName)
             tempFileToRemove = treeFile
         else:
-            print "The file must be in either '.tree' or '.newick' format"
+            print "The file must be in either tree or newick format"
             sys.exit(1)
 
         fixerCost, DPCost = fixer.fix(newickFile, dVal, tVal, lVal, verbose, limit) # run fixer.py with .newick file
@@ -123,11 +127,11 @@ def main():
     except CheetaError as e:
         print str(e)
         if e.hasInnerError:
-            print >> sys.stderr, e.innerError
+            logging.exception("Cheeta error: {:%Y-%m-%d %H:%M:%S}".format(datetime.datetime.now()))
         sys.exit(1)
-    except Exception as e:
-        print "Unknown error has occurred"
-        print >> sys.stderr, e.message
+    except:
+        print "Unknown error has occurred. Check Error Log"
+        logging.exception("Cheeta error: {:%Y-%m-%d %H:%M:%S}".format(datetime.datetime.now()))
         sys.exit(1)
 
     # compare fixer score with Jane score

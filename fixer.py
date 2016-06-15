@@ -10,6 +10,7 @@
 # Run with
 # python fixer.py
 
+import sys
 from ete3 import Tree
 from newickFormatReader import newickFormatReader
 from ReconciliationGraph import buildReconciliation
@@ -253,8 +254,8 @@ def fix(fileName, dup, trans, loss, verb, limit):
                 print "number of operations: {0}".format(pull_up)
     except CheetaError:
         raise
-    except Exception as e:
-        raise CheetaError(CheetaErrorEnum.Alg, ["Fixer", e.message])
+    except:
+        raise CheetaError(CheetaErrorEnum.Alg), None, sys.exc_info()[2]
 
     return min_cost, DPCost
 
