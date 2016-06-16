@@ -15,7 +15,7 @@ class CheetaError(Exception):
         # no args
         if errNum == CheetaErrorEnum.JaneCLI:
             self.message = "Not able to execute Jane from the command line. Make sure that Jane is " + \
-                           "located in the parent directory"
+                           "located in the working directory"
         # args: fileName, message
         elif errNum == CheetaErrorEnum.FileParse:
             fileName = args[0]
