@@ -14,7 +14,7 @@
 # solution (optimal score and Jane score are the same), whether there could be a better 
 # solution, or whether there may be a better solution with larger input values for Jane.
 
-import fixer
+import fixerForGUI as fixer
 import JaneUtil
 import newickToTreeParser as ntp
 import treeToNewickParser as ptn
@@ -25,7 +25,6 @@ import os
 def usage():
     print "usage: cheeta.py [-help] [-v] [-l {limit}] [-c {dupCost, transCost, lossCost}] [-p {popSize, numGen}] file"
     return "usage: cheeta.py [-help] [-v] [-l {limit}] [-c {dupCost, transCost, lossCost}] [-p {popSize, numGen}] file"
- #   sys.exit(1)
 
 def help():
     print 'usage: python cheeta.py [-options] filename\n\n' + \
@@ -42,7 +41,6 @@ def help():
     '\t-l\t\tPlaces a limit on the number of infeasible reconciliations that Cheeta looks at\n' + \
     '\t-c\t\tAllows user to input costs for duplications, transfers, and losses respectively\n' + \
     '\t-p\t\tAllows user to input parameters for population size and number of generations in Jane\n'
- #   sys.exit(0)
                        
 def cheeta(fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit):
     newickFile = None
@@ -53,8 +51,8 @@ def cheeta(fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit):
     try:
         # file converter
         if fileName == None:
-            print "The file must be in either '.tree' or '.newick' format"
-            return "The file must be in either '.tree' or '.newick' format"
+            print "Please upload a file in either '.tree' or '.newick' format"
+            return "Please upload a file in either '.tree' or '.newick' format"
         elif fileName.endswith('.tree'):
             treeFile = fileName
             newickFile = ptn.treeToNewickParser(fileName)
@@ -66,9 +64,8 @@ def cheeta(fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit):
         else:
             print "The file must be in either '.tree' or '.newick' format"
             return "The file must be in either '.tree' or '.newick' format"
-         #   sys.exit(1)
 
-        fixerCost, DPCost = fixer.fix(newickFile, dVal, tVal, lVal, verbose, limit) # run fixer.py with .newick file
+        fixerCost, DPCost, answer1 = fixer.fix(newickFile, dVal, tVal, lVal, verbose, limit) # run fixer.py with .newick file
 
         # run Jane with .tree file
         janeOut = JaneUtil.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
@@ -78,12 +75,10 @@ def cheeta(fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit):
         if e.hasInnerError:
             print >> sys.stderr, e.innerError
         return str(e)
-     #   sys.exit(1)
     except Exception as e:
         print "Unknown error has occurred"
         print >> sys.stderr, e.message
         return "Unknown error has occurred"
-      #  sys.exit(1)
 
     # compare fixer score with Jane score
     if DPCost == janeCost:  # Jane's solution is optimal
@@ -111,7 +106,12 @@ def cheeta(fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit):
         os.remove(janeOut)
     except OSError:
         pass
-    return answer
-  #  sys.exit(0)
+        
+    # testing if the verbose option was on    
+    if verbose == True:
+        toReturn = answer1 + "\r\n" + answer
+        return toReturn
+    else:
+        return answer
 
 

@@ -8,9 +8,12 @@
 #
 
 from Tkinter import *
+
 import Tkinter as tk
 from tkFileDialog   import askopenfilename
 from cheetaForGUI import *
+import tkFont
+from PIL import ImageTk, Image
 
 
 fileOpened = False
@@ -57,34 +60,66 @@ class makeMenu(Frame):
 def fetch(entries):
    answers = []
    for entry in entries:
-      field = entry[0]
-      text  = entry[1].get()
-      print ('%s: "%s"' % (field, text))
-      answers.append((field, text)) 
+      if str(entry) != "verbose":
+        field = entry[0]
+        text  = entry[1].get()
+        print ('%s: "%s"' % (field, text))
+        answers.append((field, text))
+      else:
+          print "hi !!!"
+   print "IN fetch!!"
+   print answers
    return answers
+   
+def verboseSel():
+    global verbose
+    selection = var.get()
+    if selection == 1:
+        verbose = True
+    else:
+        verbose = False
+    return verbose
 
 def makeForm(root, fields):
    global dVal, tVal, lVal, popSize, numGen, verbose, limit
    entries = []
    for field in fields:
+       
+      # naming the labels
       labelText=StringVar()
-      labelText.set(str(field))
-      print "labelText", labelText
+      if str(field) == "dVal":
+          labelText.set("D(uplicate)")
+      elif str(field) == "tVal":
+          labelText.set("T(ransfer)")
+      elif str(field) == "lVal":
+          labelText.set("L(oss)")
+      elif str(field) == "popSize":
+          labelText.set("Population size")
+      elif str(field) == "numGen":
+          labelText.set("Number of generations")
+      elif str(field) == "verbose":
+          labelText.set("Verbose")
+      else:
+          labelText.set("Limit")
       labelE=Label(root, textvariable=labelText)
       labelE.pack(side="top")
-      print "labelE", labelE
-      title=StringVar(None)
-      textHere=Entry(root,textvariable=title,width=500)
-      textHere.pack(side="top")
-      textHere.insert(0, str(field))
-      #lab = Label(textHere, width=15, text=field, anchor='w')
+      
+      # creating the inputs
+      if str(field) == "verbose":
+          verbOn = Radiobutton(root, text="On", padx = 15, variable=var, value=1, command=verboseSel)
+          verbOn.pack(side="top")
+          verbOff = Radiobutton(root, text="Off", padx = 15, variable=var, value=2, command=verboseSel)
+          verbOff.pack(side="top")          
+          
+      else:
+          textHere=Entry(root,textvariable=("default"),width=120)
+          textHere.pack(side="top")
       inputGiven = Entry(textHere)
+      inputGiven.pack(side="top")
+      if str(field) != "verbose":
+           entries.append((field, inputGiven))
       
-      #lab.pack(side=LEFT)
-      inputGiven.pack(side=RIGHT, expand=YES, fill=X)
-      
-      entries.append((field, inputGiven))
-   print "In makeForm"
+   print "makeForm HIHI", entries
    return entries
    
 def retrieveInput(inputs):
@@ -110,9 +145,6 @@ def retrieveInput(inputs):
         elif i[0] == 'numGen':
             if i[1] != "":
                 numGen = i[1]
-        elif i[0] == 'verbose':
-            if i[1] != "":
-                verbose = i[1]
         elif i[0] == 'limit':
             if i[1] != "":
                 limit = i[1]
@@ -120,26 +152,23 @@ def retrieveInput(inputs):
    
 def callCheeta():
  #   runningCheetaText()
+    global verbose
     fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit = retrieveInput(inputs)
+    print "NEEDED: ", fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit
     answer = cheeta(fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit)
     displayAnswer(answer)
-    
-"""
-def runningCheetaText():
-    outputMessage.delete(1.0, END)    
-    outputMessage.pack()
-    outputMessage.insert(END, "running Cheeta... This may take a few minutes.")
-    """
-
-def displayInputFile(answer):
-    inputFile.delete(1.0, END)    
-    inputFile.pack()
-    inputFile.insert(END, "Uploaded file: " + answer)
 
 def displayAnswer(answer):
     outputMessage.delete(1.0, END)    
     outputMessage.pack()
     outputMessage.insert(END, answer)
+    
+"""
+def showButton():
+    outputMessage.delete(1.0, END)    
+    outputMessage.pack()
+    answer = makeForm(root, fields)
+    outputMessage.insert(END, answer)"""
     
 def OpenFile():
     global fileOpened, fileName
@@ -152,19 +181,44 @@ def OpenFile():
 
 if __name__ == "__main__":
     root = tk.Tk()
-    outputMessage = Text(root, height=50, width=100)
+    # upload an image for background
+    im = Image.open('jungle2.jpg')
+    tkimage = ImageTk.PhotoImage(im)
+    myvar=tk.Label(root,image = tkimage)
+    myvar.place(x=0, y=0, relwidth=1, relheight=1)
+    
+    var = IntVar()
+    outputMessage = Text(root, height=50, width=100, relief='flat', bg='orange2')
+    
     inputs = makeForm(root, fields)
     print "INPUTS FROM MAKEFORM: ", inputs
     fileNum, dVal, tVal, lVal, popSize, numGen, verbose, limit = retrieveInput(inputs)
     root.bind('<Return>', (lambda event, e=inputs: fetch(e)))   
-    b1 = Button(root, text='Show', command=(lambda e=inputs: fetch(e)))
-    b1.pack(side=LEFT, padx=5, pady=5)
+ 
+    # create button 
     b = Button(root, text="Run Cheeta", command=callCheeta)
     b.pack()
+    
     menu = Menu(root)
+    app = makeMenu(root)
     main = MainWindow(root)
     main.pack(side="top", fill="both", expand=True)
     main = Application(root)
+    
+    # display initial message
+    default = "The default and current settings are: \n" \
+    "fileName = None \n" \
+    "Duplication cost = 2 \n" \
+    "Tranfer cost = 3 \n" \
+    "Loss cost = 1 \n" \
+    "Population size = 30 \n" \
+    "Number of generations = 30 \n" \
+    "Verbose = False \n" \
+    "Limit = None \n"
+    displayAnswer(default)
+    
+    
+    
     root.geometry('1000x900+300+300')
-    app = makeMenu(root)
+  #  root.configure(bg='orange2')
     root.mainloop()
