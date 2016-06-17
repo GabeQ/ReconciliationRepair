@@ -1,4 +1,4 @@
-# fixer.py
+# fixerForGUI.py
 #
 # Weiyun Ma, Dima Smirnov
 # May 2016
@@ -7,8 +7,7 @@
 # first 100 .newick files in the real-100taxa folder and writes
 # outputs into corresponding .txt files in the fixerOut folder.
 #
-# Run with
-# python fixer.py
+
 
 import sys
 from ete3 import Tree
@@ -24,6 +23,7 @@ dVal = 0
 tVal = 0
 lVal = 0
 verbose = False
+fixerLog = ""
 
 def recon_tree_to_dtl(T):
     sigma, delta, theta, xi = [], [], [], []
@@ -170,6 +170,7 @@ def temporal_consistency_fixer(G, G_dict, S, S_dict, alpha):
 
 
 def out(S, G, alpha):
+    global fixerLog
     T = dtl_to_recon_tree(S, G, alpha)
     d, s, t, l = 0, 0, 0, 0
     for key in T.keys():
@@ -184,6 +185,8 @@ def out(S, G, alpha):
 
     if verbose:
         print "D:", d, "S:", s, "T:", t, "L:", l, "total:", d * dVal + t * tVal + l * lVal
+        theKey = "D:", d, "S:", s, "T:", t, "L:", l, "total:", d * dVal + t * tVal + l * lVal
+        fixerLog = fixerLog + "\r\n" + str(theKey)
 
     return d * dVal + t * tVal + l * lVal
 
@@ -221,7 +224,7 @@ def eteTreeReader(fileName):
 
 
 def fix(fileName, dup, trans, loss, verb, limit):
-    global dVal, tVal, lVal, verbose
+    global dVal, tVal, lVal, verbose, fixerLog
     dVal = dup
     tVal = trans
     lVal = loss
@@ -237,6 +240,10 @@ def fix(fileName, dup, trans, loss, verb, limit):
             print "Fixer Output"
             print "# of Reconciliations: {0}".format(totRecs)
             print "# of Infeasible Reconciliations: {0}".format(len(recs))
+            part1 = "Fixer Output"
+            part2 = str("# of Reconciliations: {0}".format(totRecs))
+            part3 = str("# of Infeasible Reconciliations: {0}".format(len(recs)))
+            fixerLog = fixerLog + "\r\n" + part1 + "\r\n" + part2 + "\r\n" + part3
 
         min_cost = None
 
@@ -252,11 +259,13 @@ def fix(fileName, dup, trans, loss, verb, limit):
                 min_cost = cost
             if verbose:
                 print "number of operations: {0}".format(pull_up)
+                addOn = str("number of operations: {0}".format(pull_up))
+                fixerLog = fixerLog + "\r\n" + addOn
     except CheetaError:
         raise
     except:
         raise CheetaError(CheetaErrorEnum.Alg), None, sys.exc_info()[2]
 
-    return min_cost, DPCost
+    return min_cost, DPCost, fixerLog
 
 

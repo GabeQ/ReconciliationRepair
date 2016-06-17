@@ -11,9 +11,11 @@ from Tkinter import *
 
 import Tkinter as tk
 from tkFileDialog   import askopenfilename
-from cheetaForGUI import *
+from cheeta import *
 import tkFont
 from PIL import ImageTk, Image
+from CheetaExceptions import CheetaError, CheetaErrorEnum
+
 
 
 fileOpened = False
@@ -25,6 +27,7 @@ popSize = 30
 numGen = 30
 verbose = False
 limit = None
+cheetaLog = ""
 
 fields = 'dVal','tVal','lVal','popSize','numGen','verbose','limit'
 
@@ -125,33 +128,68 @@ def retrieveInput(inputs):
     for i in entries:
         if i[0] == 'dVal':
             if i[1] != "":
-                dVal = i[1]
+                dVal = int(i[1])
         elif i[0] == 'tVal':
             if i[1] != "":
-                tVal = i[1]
+                tVal = int(i[1])
         elif i[0] == 'lVal':
             if i[1] != "":
-                lVal = i[1]
+                lVal = int(i[1])
         elif i[0] == 'popSize':
             if i[1] != "":
-                popSize = i[1]
+                popSize = int(i[1])
         elif i[0] == 'numGen':
             if i[1] != "":
-                numGen = i[1]
+                numGen = int(i[1])
         elif i[0] == 'limit':
             if i[1] != "":
-                limit = i[1]
+                limit = int(i[1])
     return fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit
    
 def callCheeta():
-    global verbose
-    
-    gif1 = PhotoImage(file = 'cheetah.gif')
-    
+    global verbose, cheetaLog  
     fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit = retrieveInput(inputs)
-    print "NEEDED: ", fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit
-    answer = cheeta(fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit)
-    displayAnswer(answer)
+    if fileName == None:
+        print "Please upload a file in either '.tree' or '.newick' format"
+        cheetaLog = "Please upload a file in either '.tree' or '.newick' format" 
+    else:
+        cheetaLog = ""       
+        print "NEEDED: ", fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit     
+        try:
+            fixerCost, fixerLog, DPCost, janeCost = cheeta(fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit)
+        except CheetaError as e:
+            print str(e)
+            raise
+        except:
+            print "Unknown error has occurred. Check Error Log"
+            raise
+        
+        # check Verbose
+        if verbose == True:
+            cheetaLog = fixerLog + "\r\n"
+        
+        # compare fixer score with Jane score
+        if DPCost == janeCost:  # Jane's solution is optimal
+            print "Jane Solution Cost: " + str(janeCost)
+            print "Theoretical Lower Bound: " + str(DPCost)
+            print "Jane's Solution is Optimal"
+            cheetaLog = cheetaLog + "Jane Solution Cost: " + str(janeCost) + ", Theoretical Lower Bound: " + str(DPCost) + ", Jane's Solution is Optimal"
+    
+        elif fixerCost < janeCost:  # fixer found a better solution than Jane
+            print "Jane Solution Cost: " + str(janeCost)
+            print "Theoretical Lower Bound: " + str(DPCost)
+            print "Cheeta found a valid solution of cost: " + str(fixerCost)
+            print "You may wish to try running Jane again with larger values for the population and/or generation parameters"
+            cheetaLog = cheetaLog + "Jane Solution Cost: " + str(janeCost) + ", Theoretical Lower Bound: " + str(DPCost) + ", You may wish to try running Jane again with larger values for the population and/or generation parameters"
+    
+        else:  # fixer was unable to find a better solution than Jane
+            print "Jane Solution Cost: " + str(janeCost)
+            print "Theoretical Lower Bound: " + str(DPCost)
+            print "Cheeta was unable to find a valid solution better than Jane"
+            print "You may wish to try running Jane again with larger values for the population and/or generation parameters"
+            cheetaLog = cheetaLog + "Jane Solution Cost: " + str(janeCost) + ", Theoretical Lower Bound: " + str(DPCost) + ", Cheeta was unable to find a valid solution better than Jane" + " You may wish to try running Jane again with larger values for the population and/or generation parameters"
+        
+    displayAnswer(cheetaLog)
 
 def displayAnswer(answer):
     outputMessage.delete(1.0, END)    
@@ -201,7 +239,7 @@ if __name__ == "__main__":
     "Loss cost = 1 \n" \
     "Population size = 30 \n" \
     "Number of generations = 30 \n" \
-    "Verbose = False \n" \
+    "Verbose = Off \n" \
     "Limit = None \n"
     displayAnswer(default)
     

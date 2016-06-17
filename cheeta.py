@@ -19,7 +19,7 @@ import JaneUtil
 import logging
 import newickToTreeParser as ntp
 import treeToNewickParser as ptn
-from CheetaExceptions import CheetaError
+from CheetaExceptions import CheetaError, CheetaErrorEnum
 import datetime
 import sys
 import os
@@ -93,10 +93,8 @@ def readArgs():
         usage()
     
                        
-def main():
-    
-    readArgs()
-    # arguments to be provided in the command line
+
+def cheeta(fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit):
     
     newickFile = None
     treeFile = None
@@ -115,25 +113,47 @@ def main():
             treeFile = ntp.newickToTreeParser(fileName)
             tempFileToRemove = treeFile
         else:
-            print "The file must be in either tree or newick format"
-            sys.exit(1)
+            raise CheetaError(CheetaErrorEnum.FileParseError, fileName, "The file must be in either tree or newick format")
 
-        fixerCost, DPCost = fixer.fix(newickFile, dVal, tVal, lVal, verbose, limit) # run fixer.py with .newick file
+        fixerCost, DPCost, fixerLog = fixer.fix(newickFile, dVal, tVal, lVal, verbose, limit) # run fixer.py with .newick file
         DPCost = int(DPCost)
         
         # run Jane with .tree file
         janeOut = JaneUtil.runJane(treeFile, popSize, numGen, dVal, tVal, lVal)
         janeCost = JaneUtil.janeCost(janeOut, dVal, tVal, lVal)
     except CheetaError as e:
-        print str(e)
         if e.hasInnerError:
             logging.exception("Cheeta error: {:%Y-%m-%d %H:%M:%S}".format(datetime.datetime.now()))
-        sys.exit(1)
+        raise
+    except:
+        logging.exception("Cheeta error: {:%Y-%m-%d %H:%M:%S}".format(datetime.datetime.now()))
+        raise CheetaError(CheetaErrorEnum.Other), None, sys.exc_info()[2]
+
+    try:
+        os.remove(tempFileToRemove)
+        os.remove(janeOut)
+    except OSError:
+        pass
+
+    return fixerCost, fixerLog, DPCost, janeCost
+
+    
+
+if __name__ == '__main__':
+    readArgs()
+    try:
+        fixerCost, fixerLog, DPCost, janeCost = cheeta(fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit)
+    except CheetaError as e:
+        print str(e)
+        raise
     except:
         print "Unknown error has occurred. Check Error Log"
-        logging.exception("Cheeta error: {:%Y-%m-%d %H:%M:%S}".format(datetime.datetime.now()))
-        sys.exit(1)
-
+        raise
+    
+    # Print Fixer Log
+    if verbose == True:
+        print fixerLog
+    
     # compare fixer score with Jane score
     if DPCost == janeCost:  # Jane's solution is optimal
         print "Jane Solution Cost: " + str(janeCost)
@@ -151,15 +171,4 @@ def main():
         print "Theoretical Lower Bound: " + str(DPCost)
         print "Cheeta was unable to find a valid solution better than Jane"
         print "You may wish to try running Jane again with larger values for the population and/or generation parameters"
-
-    try:
-        os.remove(tempFileToRemove)
-        os.remove(janeOut)
-    except OSError:
-        pass
-
-    sys.exit(0)
-
-    
-if __name__ == '__main__':
-    main()
+        
