@@ -65,10 +65,7 @@ def fetch(entries):
         text  = entry[1].get()
         print ('%s: "%s"' % (field, text))
         answers.append((field, text))
-      else:
-          print "hi !!!"
-   print "IN fetch!!"
-   print answers
+   print "IN fetch!!", answers
    return answers
    
 def verboseSel():
@@ -101,25 +98,23 @@ def makeForm(root, fields):
           labelText.set("Verbose")
       else:
           labelText.set("Limit")
-      labelE=Label(root, textvariable=labelText)
+      labelE=Label(root,bg='orange2', borderwidth=.00001, textvariable=labelText)
       labelE.pack(side="top")
       
       # creating the inputs
       if str(field) == "verbose":
-          verbOn = Radiobutton(root, text="On", padx = 15, variable=var, value=1, command=verboseSel)
+          verbOn = Radiobutton(root,borderwidth=.00001, bg='orange2', text="On", padx = 15, variable=var, value=1, command=verboseSel)
           verbOn.pack(side="top")
-          verbOff = Radiobutton(root, text="Off", padx = 15, variable=var, value=2, command=verboseSel)
-          verbOff.pack(side="top")          
-          
+          verbOff = Radiobutton(root,borderwidth=.00001, bg='orange2', text="Off", padx = 15, variable=var, value=2, command=verboseSel)
+          verbOff.pack(side="top")      
       else:
-          textHere=Entry(root,textvariable=("default"),width=120)
+          textHere=Entry(root, borderwidth=.00001, bg='orange2',textvariable=("default"),width=25)
           textHere.pack(side="top")
-      inputGiven = Entry(textHere)
-      inputGiven.pack(side="top")
-      if str(field) != "verbose":
-           entries.append((field, inputGiven))
+          inputGiven = Entry(textHere)
+          inputGiven.pack(side="top")
+          entries.append((field, inputGiven))
       
-   print "makeForm HIHI", entries
+   print "in makeForm HI HI", entries
    return entries
    
 def retrieveInput(inputs):
@@ -128,9 +123,7 @@ def retrieveInput(inputs):
     print "entries: ", entries
     global fileName, fileOpened, dVal, tVal, lVal, popSize, numGen, verbose, limit
     for i in entries:
-        if i[0] == 'fileName' and fileOpened == False:
-            fileName = i[1]
-        elif i[0] == 'dVal':
+        if i[0] == 'dVal':
             if i[1] != "":
                 dVal = i[1]
         elif i[0] == 'tVal':
@@ -151,8 +144,10 @@ def retrieveInput(inputs):
     return fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit
    
 def callCheeta():
- #   runningCheetaText()
     global verbose
+    
+    gif1 = PhotoImage(file = 'cheetah.gif')
+    
     fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit = retrieveInput(inputs)
     print "NEEDED: ", fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit
     answer = cheeta(fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit)
@@ -162,13 +157,6 @@ def displayAnswer(answer):
     outputMessage.delete(1.0, END)    
     outputMessage.pack()
     outputMessage.insert(END, answer)
-    
-"""
-def showButton():
-    outputMessage.delete(1.0, END)    
-    outputMessage.pack()
-    answer = makeForm(root, fields)
-    outputMessage.insert(END, answer)"""
     
 def OpenFile():
     global fileOpened, fileName
@@ -187,16 +175,15 @@ if __name__ == "__main__":
     myvar=tk.Label(root,image = tkimage)
     myvar.place(x=0, y=0, relwidth=1, relheight=1)
     
+    # create variables
     var = IntVar()
-    outputMessage = Text(root, height=50, width=100, relief='flat', bg='orange2')
+    outputMessage = Text(root, height=50, width=100, relief='flat', bg='orange3') 
     
     inputs = makeForm(root, fields)
-    print "INPUTS FROM MAKEFORM: ", inputs
-    fileNum, dVal, tVal, lVal, popSize, numGen, verbose, limit = retrieveInput(inputs)
-    root.bind('<Return>', (lambda event, e=inputs: fetch(e)))   
+    print "INPUTS FROM MAKEFORM: ", inputs  
  
     # create button 
-    b = Button(root, text="Run Cheeta", command=callCheeta)
+    b = Button(root,borderwidth=.00001, text="Run Cheeta", command=callCheeta)
     b.pack()
     
     menu = Menu(root)
@@ -204,6 +191,7 @@ if __name__ == "__main__":
     main = MainWindow(root)
     main.pack(side="top", fill="both", expand=True)
     main = Application(root)
+    root.geometry('1000x900+300+300')
     
     # display initial message
     default = "The default and current settings are: \n" \
@@ -217,8 +205,5 @@ if __name__ == "__main__":
     "Limit = None \n"
     displayAnswer(default)
     
-    
-    
-    root.geometry('1000x900+300+300')
   #  root.configure(bg='orange2')
     root.mainloop()
