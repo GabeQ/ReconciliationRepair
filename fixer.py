@@ -184,9 +184,8 @@ def out(S, G, alpha):
             l += 1
 
     if verbose:
-        print "D:", d, "S:", s, "T:", t, "L:", l, "total:", d * dVal + t * tVal + l * lVal
         theKey = "D:", d, "S:", s, "T:", t, "L:", l, "total:", d * dVal + t * tVal + l * lVal
-        fixerLog = fixerLog + "\r\n" + str(theKey)
+        fixerLog = fixerLog + str(theKey) + "\r\n"
 
     return d * dVal + t * tVal + l * lVal
 
@@ -237,13 +236,10 @@ def fix(fileName, dup, trans, loss, verb, limit):
         totRecs = len(allRecs)
         
         if verbose:
-            print "Fixer Output"
-            print "# of Reconciliations: {0}".format(totRecs)
-            print "# of Infeasible Reconciliations: {0}".format(len(recs))
             part1 = "Fixer Output"
             part2 = str("# of Reconciliations: {0}".format(totRecs))
             part3 = str("# of Infeasible Reconciliations: {0}".format(len(recs)))
-            fixerLog = fixerLog + "\r\n" + part1 + "\r\n" + part2 + "\r\n" + part3
+            fixerLog = fixerLog + part1 + "\r\n" + part2 + "\r\n" + part3 + "\r\n"
 
         min_cost = None
 
@@ -258,9 +254,8 @@ def fix(fileName, dup, trans, loss, verb, limit):
             if min_cost is None or cost < min_cost:
                 min_cost = cost
             if verbose:
-                print "number of operations: {0}".format(pull_up)
                 addOn = str("number of operations: {0}".format(pull_up))
-                fixerLog = fixerLog + "\r\n" + addOn
+                fixerLog = fixerLog + addOn + "\r\n"
     except CheetaError:
         raise
     except:
