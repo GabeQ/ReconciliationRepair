@@ -193,7 +193,7 @@ def callCheeta():
 
 def displayAnswer(answer):
     outputMessage.delete(1.0, END)    
-    outputMessage.pack()
+    outputMessage.pack(side='bottom')
     outputMessage.insert(END, answer)
     
 def OpenFile():
@@ -205,17 +205,56 @@ def OpenFile():
     displayAnswer(name)
     return fileOpened, fileName
 
+def make_label(parent, img):
+    label = Label(parent, image=img)
+    label.pack()
+
+"""
+class Test:
+        def __init__(self, root):        
+            canvas = tk.Canvas(root,width=150, height=222)
+            canvas.grid(row = 0, column = 0)
+            canvas.create_image(0,0, image=photo)"""
+
+
 if __name__ == "__main__":
     root = tk.Tk()
     # upload an image for background
-    im = Image.open('jungle2.jpg')
+    im = Image.open('jungle2MONKEY.jpg')
     tkimage = ImageTk.PhotoImage(im)
     myvar=tk.Label(root,image = tkimage)
     myvar.place(x=0, y=0, relwidth=1, relheight=1)
     
+   # img = ImageTk.PhotoImage(Image.open("monkey.png"))
+    """
+    panel = tk.Label(root, image=img)
+    panel.grid(row=1,column=1)
+    """
+    
+  #  img = ImageTk.PhotoImage(Image.open("jungle2small copy.jpg"))
+  #  logo = Label(root, image = img)
+  #  logo.pack()
+   # logo.place(x=0, y=0)
+    
+    """
+    frame = Frame(root,width=150, height=222)
+    frame.pack_propagate(0)    
+    frame.pack(side='left')
+    img = PhotoImage(file='monkey1.gif')
+    make_label(frame, img)
+    
+    w = Canvas(root, width=150, height=222)
+    w.pack(side='left')
+    img = ImageTk.PhotoImage(Image.open("monkey1.gif"))
+    w.create_image(0,0, image=img)
+    
+    #photo = PhotoImage(file='monkey1.gif')
+    #test = Test(root)
+    """
+    
     # create variables
     var = IntVar()
-    outputMessage = Text(root, height=50, width=100, relief='flat', bg='orange3') 
+    outputMessage = Text(root, height=50, width=100, relief='flat', bg='orange3', font =(15)) 
     
     inputs = makeForm(root, fields)
     print "INPUTS FROM MAKEFORM: ", inputs  
