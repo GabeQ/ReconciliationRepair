@@ -83,10 +83,11 @@ def verboseSel():
 def makeForm(root, fields):
    global dVal, tVal, lVal, popSize, numGen, verbose, limit
    entries = []
+   count = 0
    for field in fields:
-       
+      count = count + 20
       # naming the labels
-      labelText=StringVar()
+      labelText = StringVar()
       if str(field) == "dVal":
           labelText.set("D(uplicate)")
       elif str(field) == "tVal":
@@ -103,6 +104,7 @@ def makeForm(root, fields):
           labelText.set("Limit")
       labelE=Label(root,bg='orange2', borderwidth=.00001, textvariable=labelText)
       labelE.pack(side="top")
+    #  labelE.grid(row=1, column=(0 + count))
       
       # creating the inputs
       if str(field) == "verbose":
@@ -111,8 +113,10 @@ def makeForm(root, fields):
           verbOff = Radiobutton(root,borderwidth=.00001, bg='orange2', text="Off", padx = 15, variable=var, value=2, command=verboseSel)
           verbOff.pack(side="top")      
       else:
+        #  count = count + 20
           textHere=Entry(root, borderwidth=.00001, bg='orange2',textvariable=("default"),width=25)
           textHere.pack(side="top")
+        #  textHere.grid(row=1, column=(0 + count))
           inputGiven = Entry(textHere)
           inputGiven.pack(side="top")
           entries.append((field, inputGiven))
@@ -150,10 +154,20 @@ def callCheeta():
     global verbose, cheetaLog  
     fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit = retrieveInput(inputs)
     if fileName == None:
-        print "Please upload a file in either '.tree' or '.newick' format"
-        cheetaLog = "Please upload a file in either '.tree' or '.newick' format" 
+        print "Please upload a file in either '.tree' or '.newick' format. To upload click 'File' then 'Open file.'"
+        cheetaLog = "Please upload a file in either '.tree' or '.newick' format. To upload click 'File' then 'Open file.'"
     else:
-        cheetaLog = ""       
+        cheetaLog = "Cheeta parameters:  \n" \
+        "fileName = " + fileName + " \n" \
+        "Duplication cost = " + str(dVal) + " \n" \
+        "Tranfer cost = " + str(tVal) + " \n" \
+        "Loss cost = " + str(lVal) + " \n" \
+        "Population size = " + str(popSize) + " \n" \
+        "Number of generations = " + str(numGen) + " \n" \
+        "Verbose = " + str(verbose) + " \n" \
+        "Limit = " + str(limit) + " \n" \
+        " \n" 
+        
         print "NEEDED: ", fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit     
         try:
             fixerCost, fixerLog, DPCost, janeCost = cheeta(fileName, dVal, tVal, lVal, popSize, numGen, verbose, limit)
@@ -166,28 +180,28 @@ def callCheeta():
         
         # check Verbose
         if verbose == True:
-            cheetaLog = fixerLog + "\r\n"
-        
+            cheetaLog = cheetaLog + fixerLog + "\r\n"
+            
         # compare fixer score with Jane score
         if DPCost == janeCost:  # Jane's solution is optimal
             print "Jane Solution Cost: " + str(janeCost)
             print "Theoretical Lower Bound: " + str(DPCost)
             print "Jane's Solution is Optimal"
-            cheetaLog = cheetaLog + "Jane Solution Cost: " + str(janeCost) + ", Theoretical Lower Bound: " + str(DPCost) + ", Jane's Solution is Optimal"
+            cheetaLog = cheetaLog + "Jane Solution Cost: " + str(janeCost) + " \n" + "Theoretical Lower Bound: " + str(DPCost) + " \n" + "Jane's Solution is Optimal"
     
         elif fixerCost < janeCost:  # fixer found a better solution than Jane
             print "Jane Solution Cost: " + str(janeCost)
             print "Theoretical Lower Bound: " + str(DPCost)
             print "Cheeta found a valid solution of cost: " + str(fixerCost)
             print "You may wish to try running Jane again with larger values for the population and/or generation parameters"
-            cheetaLog = cheetaLog + "Jane Solution Cost: " + str(janeCost) + ", Theoretical Lower Bound: " + str(DPCost) + ", You may wish to try running Jane again with larger values for the population and/or generation parameters"
+            cheetaLog = cheetaLog + "Jane Solution Cost: " + str(janeCost) + " \n" + "Theoretical Lower Bound: " + str(DPCost) + " \n" + "You may wish to try running Jane again with larger values for the population and/or generation parameters"
     
         else:  # fixer was unable to find a better solution than Jane
             print "Jane Solution Cost: " + str(janeCost)
             print "Theoretical Lower Bound: " + str(DPCost)
             print "Cheeta was unable to find a valid solution better than Jane"
             print "You may wish to try running Jane again with larger values for the population and/or generation parameters"
-            cheetaLog = cheetaLog + "Jane Solution Cost: " + str(janeCost) + ", Theoretical Lower Bound: " + str(DPCost) + ", Cheeta was unable to find a valid solution better than Jane" + " You may wish to try running Jane again with larger values for the population and/or generation parameters"
+            cheetaLog = cheetaLog + "Jane Solution Cost: " + str(janeCost) + " \n" + "Theoretical Lower Bound: " + str(DPCost) + " \n" + "Cheeta was unable to find a valid solution better than Jane" + " \n" + "You may wish to try running Jane again with larger values for the population and/or generation parameters"
         
     displayAnswer(cheetaLog)
 
@@ -199,7 +213,7 @@ def displayAnswer(answer):
 def OpenFile():
     global fileOpened, fileName
     fileOpened = True
-    uploadedName = askopenfilename()
+    uploadedName = askopenfilename(filetypes=[('Newick files', '*.newick'),('Tree files', '*.tree'),('Nwk files', '*.nwk')])
     fileName = uploadedName
     name = "Uploaded file: " + uploadedName
     displayAnswer(name)
@@ -209,52 +223,20 @@ def make_label(parent, img):
     label = Label(parent, image=img)
     label.pack()
 
-"""
-class Test:
-        def __init__(self, root):        
-            canvas = tk.Canvas(root,width=150, height=222)
-            canvas.grid(row = 0, column = 0)
-            canvas.create_image(0,0, image=photo)"""
-
 
 if __name__ == "__main__":
     root = tk.Tk()
+    root.iconbitmap(r'cooltext.png')
+    
     # upload an image for background
     im = Image.open('wowmonkey.jpg')
     tkimage = ImageTk.PhotoImage(im)
     myvar=tk.Label(root,image = tkimage)
     myvar.place(x=0, y=0, relwidth=1, relheight=1)
     
-   # img = ImageTk.PhotoImage(Image.open("monkey.png"))
-    """
-    panel = tk.Label(root, image=img)
-    panel.grid(row=1,column=1)
-    """
-    
-  #  img = ImageTk.PhotoImage(Image.open("jungle2small copy.jpg"))
-  #  logo = Label(root, image = img)
-  #  logo.pack()
-   # logo.place(x=0, y=0)
-    
-    """
-    frame = Frame(root,width=150, height=222)
-    frame.pack_propagate(0)    
-    frame.pack(side='left')
-    img = PhotoImage(file='monkey1.gif')
-    make_label(frame, img)
-    
-    w = Canvas(root, width=150, height=222)
-    w.pack(side='left')
-    img = ImageTk.PhotoImage(Image.open("monkey1.gif"))
-    w.create_image(0,0, image=img)
-    
-    #photo = PhotoImage(file='monkey1.gif')
-    #test = Test(root)
-    """
-    
     # create variables
     var = IntVar()
-    outputMessage = Text(root, height=50, width=100, relief='flat', bg='orange3', font =(15)) 
+    outputMessage = Text(root, height=51, width=100, relief='flat', bg='orange2', font =(15)) 
     
     inputs = makeForm(root, fields)
     print "INPUTS FROM MAKEFORM: ", inputs  
