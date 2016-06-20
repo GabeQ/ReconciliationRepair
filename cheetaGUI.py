@@ -220,7 +220,7 @@ class Test:
 if __name__ == "__main__":
     root = tk.Tk()
     # upload an image for background
-    im = Image.open('jungle2MONKEY.jpg')
+    im = Image.open('wowmonkey.jpg')
     tkimage = ImageTk.PhotoImage(im)
     myvar=tk.Label(root,image = tkimage)
     myvar.place(x=0, y=0, relwidth=1, relheight=1)
@@ -271,7 +271,9 @@ if __name__ == "__main__":
     root.geometry('1000x900+300+300')
     
     # display initial message
-    default = "The default and current settings are: \n" \
+    default = "Welcome to Cheeta! \n" \
+    " \n" \
+    "The default and current settings are: \n" \
     "fileName = None \n" \
     "Duplication cost = 2 \n" \
     "Tranfer cost = 3 \n" \
