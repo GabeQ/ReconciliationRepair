@@ -15,6 +15,9 @@ from cheeta import *
 import tkFont
 from PIL import ImageTk, Image
 from CheetaExceptions import CheetaError, CheetaErrorEnum
+import image
+import PIL
+from PIL import _imaging
 
 
 
@@ -236,7 +239,7 @@ if __name__ == "__main__":
     
     # create variables
     var = IntVar()
-    outputMessage = Text(root, height=51, width=100, relief='flat', bg='orange2', font =(15)) 
+    outputMessage = Text(root, height=51, width=100, relief='flat', bg='orange3', font =(15)) 
     
     inputs = makeForm(root, fields)
     print "INPUTS FROM MAKEFORM: ", inputs  
