@@ -23,8 +23,8 @@ from PIL import _imaging
 
 fileOpened = False
 fileName = None
-dVal = 2
-tVal = 3
+dVal = 1
+tVal = 2
 lVal = 1
 popSize = 30
 numGen = 30
@@ -239,7 +239,7 @@ if __name__ == "__main__":
     
     # create variables
     var = IntVar()
-    outputMessage = Text(root, height=51, width=100, relief='flat', bg='orange3', font =(15)) 
+    outputMessage = Text(root, height=51, width=100, relief='flat', bg='orange2', font =(15)) 
     
     inputs = makeForm(root, fields)
     print "INPUTS FROM MAKEFORM: ", inputs  
@@ -260,8 +260,8 @@ if __name__ == "__main__":
     " \n" \
     "The default and current settings are: \n" \
     "fileName = None \n" \
-    "Duplication cost = 2 \n" \
-    "Tranfer cost = 3 \n" \
+    "Duplication cost = 1 \n" \
+    "Tranfer cost = 2 \n" \
     "Loss cost = 1 \n" \
     "Population size = 30 \n" \
     "Number of generations = 30 \n" \
