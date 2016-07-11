@@ -3,9 +3,6 @@
 # Created by Matt Dohlen, Chen Pekker, Gabriel Quiroz
 # June 2016
 #
-#
-#
-#
 
 from Tkinter import *
 
@@ -19,8 +16,7 @@ import image
 import PIL
 from PIL import _imaging
 
-
-
+#global variables
 fileOpened = False
 fileName = None
 dVal = 1
@@ -84,11 +80,13 @@ def verboseSel():
     return verbose
 
 def makeForm(root, fields):
+   """builds the display of the GUI, including the entry fields and labels for the inputs"""
    global dVal, tVal, lVal, popSize, numGen, verbose, limit
    entries = []
    count = 0
    for field in fields:
       count = count + 20
+      
       # naming the labels
       labelText = StringVar()
       if str(field) == "dVal":
@@ -107,7 +105,6 @@ def makeForm(root, fields):
           labelText.set("Limit")
       labelE=Label(root,bg='orange2', borderwidth=.00001, textvariable=labelText)
       labelE.pack(side="top")
-    #  labelE.grid(row=1, column=(0 + count))
       
       # creating the inputs
       if str(field) == "verbose":
@@ -116,15 +113,11 @@ def makeForm(root, fields):
           verbOff = Radiobutton(root,borderwidth=.00001, bg='orange2', text="Off", padx = 15, variable=var, value=2, command=verboseSel)
           verbOff.pack(side="top")      
       else:
-        #  count = count + 20
           textHere=Entry(root, borderwidth=.00001, bg='orange2',textvariable=("default"),width=25)
           textHere.pack(side="top")
-        #  textHere.grid(row=1, column=(0 + count))
           inputGiven = Entry(textHere)
           inputGiven.pack(side="top")
           entries.append((field, inputGiven))
-      
-   print "in makeForm HI HI", entries
    return entries
    
 def retrieveInput(inputs):
@@ -209,11 +202,13 @@ def callCheeta():
     displayAnswer(cheetaLog)
 
 def displayAnswer(answer):
+    """ displays the given message in the textbox"""
     outputMessage.delete(1.0, END)    
     outputMessage.pack(side='bottom')
     outputMessage.insert(END, answer)
     
 def OpenFile():
+    """opens files, restricted to only take in .newick, .tree, and .nwk files"""
     global fileOpened, fileName
     fileOpened = True
     uploadedName = askopenfilename(filetypes=[('Newick files', '*.newick'),('Tree files', '*.tree'),('Nwk files', '*.nwk')])
@@ -269,5 +264,4 @@ if __name__ == "__main__":
     "Limit = None \n"
     displayAnswer(default)
     
-  #  root.configure(bg='orange2')
     root.mainloop()
